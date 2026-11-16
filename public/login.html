@@ -103,6 +103,8 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
 .ty[aria-checked="true"] svg { color: var(--acc); }
 .field select { display: block; width: 100%; padding: 14px 16px; border: 0; border-radius: 8px; background: #fff; color: #1b231f; font-size: 16px; outline: none; }
 .field select:focus { box-shadow: 0 0 0 3px var(--gold); }
+.alert.ok { border-left-color: #7fd6a0; }
+.back { display: block; margin: 18px auto 0; background: none; border: 0; padding: 0; color: #fff; font-size: 15px; font-weight: 600; text-decoration: underline; cursor: pointer; }
 .note { font-size: 13px; line-height: 1.45; background: rgba(0,0,0,.28); border-left: 4px solid var(--gold); padding: 9px 12px; border-radius: 4px; margin-bottom: 16px; }
 @media (max-width: 380px) { .ty small { display: none; } }
 
@@ -214,6 +216,27 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
       <button type="submit" class="submit" id="submit">Masuk</button>
     </form>
 
+    <form id="recover" novalidate hidden>
+      <div class="alert" id="ralert" role="alert" hidden></div>
+      <div class="field" id="rEmailF">
+        <label for="remail" data-t="lblEmail">Email</label>
+        <input id="remail" type="email" autocomplete="email" inputmode="email" maxlength="254" autocapitalize="none" spellcheck="false" placeholder="Masukkan email Anda" data-tp="phEmail" aria-describedby="err-remail">
+        <p class="err" id="err-remail" hidden></p>
+      </div>
+      <div class="field" id="rPwF" hidden>
+        <label for="npw" data-t="lblNewPw">Kata sandi baru</label>
+        <div class="pw"><input id="npw" type="password" autocomplete="new-password" maxlength="128" placeholder="Minimal 8 karakter" data-tp="phNewPw" aria-describedby="err-npw"><button type="button" id="ntoggle" aria-controls="npw" aria-pressed="false" data-t="show">Tampilkan</button></div>
+        <p class="err" id="err-npw" hidden></p>
+      </div>
+      <div class="field" id="rPw2F" hidden>
+        <label for="npw2" data-t="lblNewPw2">Ulangi kata sandi baru</label>
+        <input id="npw2" type="password" autocomplete="new-password" maxlength="128" aria-describedby="err-npw2">
+        <p class="err" id="err-npw2" hidden></p>
+      </div>
+      <button type="submit" class="submit" id="rsubmit">Kirim tautan reset</button>
+      <button type="button" class="back" id="rback" data-t="backLogin">Kembali ke halaman masuk</button>
+    </form>
+
     <div class="or" id="orRow"><span data-t="or">atau</span></div>
 
     <a class="google" id="google" href="/api/auth/google">
@@ -250,7 +273,6 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
       errName: 'Nama minimal 2 karakter.', errEmail: 'Masukkan alamat email yang valid.',
       errPwMin: 'Kata sandi minimal 8 karakter.', errPwReq: 'Masukkan kata sandi Anda.',
       welcome: 'Selamat datang,', wgo: 'Membuka Sendang Duwur…', 
-      forgotMsg: 'Reset kata sandi lewat email belum tersedia. Hubungi admin desa lewat WhatsApp 0851-7159-1926 agar kata sandi Anda diatur ulang.',
       netErr: 'Tidak dapat terhubung ke server. Periksa koneksi Anda lalu coba lagi.', generic: 'Terjadi kesalahan. Coba lagi.',
       google_off: 'Login Google belum diaktifkan oleh pengelola situs.', google_denied: 'Login Google dibatalkan.', google_failed: 'Login Google gagal. Coba lagi.',
       login: { title: 'Masuk ke akun Anda', sub: 'Gunakan email dan kata sandi yang Anda daftarkan.', submit: 'Masuk', switchText: 'Baru di sini?', switchBtn: 'Buat akun', pageTitle: 'Masuk – Visit Sendang Duwur', autocomplete: 'current-password' },
@@ -266,7 +288,6 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
       errName: 'Name must be at least 2 characters.', errEmail: 'Enter a valid email address.',
       errPwMin: 'Password must be at least 8 characters.', errPwReq: 'Enter your password.',
       welcome: 'Welcome,', wgo: 'Opening Sendang Duwur…', 
-      forgotMsg: 'Password reset by email is not available yet. Contact the village admin on WhatsApp 0851-7159-1926 to have your password reset.',
       netErr: 'Could not reach the server. Check your connection and try again.', generic: 'Something went wrong. Please try again.',
       google_off: 'Google sign-in has not been enabled by the site administrator.', google_denied: 'Google sign-in was cancelled.', google_failed: 'Google sign-in failed. Please try again.',
       login: { title: 'Sign in to your account', sub: 'Use the email and password you registered with.', submit: 'Sign in', switchText: 'New here?', switchBtn: 'Create account', pageTitle: 'Sign in – Visit Sendang Duwur', autocomplete: 'current-password' },
@@ -281,6 +302,12 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
     google_wrongtype: 'Akun Google ini sudah terdaftar dengan jenis akun lain. Pilih jenis akun yang sesuai di atas.', google_noadmin: 'Akun admin tidak bisa dibuat lewat Google. Gunakan akun admin yang diberikan pengelola.', google_inactive: 'Akun ini dinonaktifkan. Hubungi admin desa.',
     lblBiz: 'Nama usaha', phBiz: 'Contoh: Batik Tulis Sendang', lblCat: 'Kategori usaha', lblWa: 'Nomor WhatsApp usaha',
     errBiz: 'Tulis nama usaha Anda.', errWa: 'Nomor WhatsApp harus angka (8–20 digit).',
+    fTitle: 'Lupa kata sandi', fSub: 'Masukkan email akun Anda. Kami kirim tautan untuk membuat kata sandi baru.', fSubmit: 'Kirim tautan reset',
+    fSent: 'Jika email itu terdaftar, tautan reset sudah kami kirim. Cek kotak masuk (dan folder spam), lalu buka tautannya dalam 1 jam.',
+    rTitle: 'Buat kata sandi baru', rSub: 'Pilih kata sandi baru untuk akun Anda.', rSubmit: 'Simpan kata sandi baru',
+    lblNewPw: 'Kata sandi baru', lblNewPw2: 'Ulangi kata sandi baru', phNewPw: 'Minimal 8 karakter', errPwMatch: 'Kedua kata sandi harus sama.',
+    backLogin: 'Kembali ke halaman masuk', rDone: 'Kata sandi berhasil diubah. Silakan masuk dengan kata sandi baru.',
+    rBad: 'Tautan reset tidak valid atau sudah kedaluwarsa. Masukkan email Anda untuk meminta tautan baru.',
   });
   Object.assign(I.en, {
     typesLabel: 'Account type', tUser: 'Visitor / Resident', tUserS: 'Tourism & village services', tUmkm: 'Business owner', tUmkmS: 'Manage your shop', tAdmin: 'Village Admin', tAdminS: 'Site administrator',
@@ -290,11 +317,17 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
     google_wrongtype: 'This Google account is registered with a different account type. Pick the matching type above.', google_noadmin: 'Admin accounts cannot be created through Google. Use the admin account you were given.', google_inactive: 'This account is deactivated. Contact the village admin.',
     lblBiz: 'Business name', phBiz: 'e.g. Batik Tulis Sendang', lblCat: 'Business category', lblWa: 'Business WhatsApp number',
     errBiz: 'Enter your business name.', errWa: 'WhatsApp number must be digits (8–20).',
+    fTitle: 'Forgot password', fSub: 'Enter your account email. We will send a link to create a new password.', fSubmit: 'Send reset link',
+    fSent: 'If that email is registered, we have sent a reset link. Check your inbox (and spam folder) and open it within 1 hour.',
+    rTitle: 'Create a new password', rSub: 'Choose a new password for your account.', rSubmit: 'Save new password',
+    lblNewPw: 'New password', lblNewPw2: 'Repeat new password', phNewPw: 'At least 8 characters', errPwMatch: 'The two passwords must match.',
+    backLogin: 'Back to sign in', rDone: 'Password changed. Please sign in with your new password.',
+    rBad: 'This reset link is invalid or has expired. Enter your email to request a new one.',
   });
   const TCOPY = {
     id: {
       user:  { login: ['Masuk sebagai pengunjung / warga', 'Simpan stempel Heritage Passport, itinerary, dan kirim laporan dengan akun Anda.'], register: ['Buat akun pengunjung / warga', 'Satu akun untuk pengunjung wisata maupun warga Desa Sendang Duwur.'], note: '' },
-      umkm:  { login: ['Masuk ke dashboard UMKM', 'Kelola profil usaha dan pantau pesanan yang masuk.'], register: ['Daftarkan usaha Anda', 'Isi data usaha. Setelah mendaftar, admin desa memverifikasi usaha Anda sebelum tampil di marketplace.'], note: 'Usaha baru berstatus “menunggu verifikasi” dan belum tampil di marketplace sampai disetujui admin desa.' },
+      umkm:  { login: ['Masuk ke dashboard UMKM', 'Kelola profil usaha dan pantau pesanan yang masuk.'], register: ['Daftarkan usaha Anda', 'Isi data usaha. Setelah mendaftar, Anda langsung bisa masuk ke dashboard dan menerima pesanan.'], note: '' },
       admin: { login: ['Masuk sebagai admin desa', 'Khusus pengelola situs. Gunakan akun admin yang diberikan.'], register: ['', ''], note: 'Akun admin tidak bisa dibuat lewat pendaftaran. Hubungi pengelola situs bila Anda perlu akses.' },
       side: { user: ['Jejak sunan, warisan batik', 'Masuk untuk menyimpan stempel Heritage Passport, itinerary, dan mengirim laporan dari perangkat mana pun.'], umkm: ['Usaha warga, pasar yang lebih luas', 'Daftarkan usaha batik, bordir, atau kulinermu. Terima pesanan dari pengunjung langsung di dashboard.'], admin: ['Pusat pengelolaan', 'Verifikasi usaha warga, pantau pesanan dan laporan, serta kelola konten situs.'] },
       wrong: 'Akun ini terdaftar sebagai {t}. Kami sudah memilihkan jenis akun yang sesuai, silakan masuk lagi.',
@@ -302,7 +335,7 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
     },
     en: {
       user:  { login: ['Sign in as visitor / resident', 'Save your Heritage Passport stamps, itinerary, and send reports with your account.'], register: ['Create a visitor / resident account', 'One account for tourists and residents of Sendang Duwur village.'], note: '' },
-      umkm:  { login: ['Sign in to the business dashboard', 'Manage your business profile and track incoming orders.'], register: ['Register your business', 'Fill in your business details. The village admin verifies it before it appears in the marketplace.'], note: 'New businesses start as “pending verification” and stay hidden from the marketplace until the village admin approves them.' },
+      umkm:  { login: ['Sign in to the business dashboard', 'Manage your business profile and track incoming orders.'], register: ['Register your business', 'Fill in your business details. Once registered you can open your dashboard and receive orders right away.'], note: '' },
       admin: { login: ['Sign in as village admin', 'Site administrators only. Use the admin account you were given.'], register: ['', ''], note: 'Admin accounts cannot be created by sign-up. Contact the site administrator if you need access.' },
       side: { user: ['Footsteps of the sunan, heritage of batik', 'Sign in to save Heritage Passport stamps and itineraries, and send reports from any device.'], umkm: ['Village businesses, a wider market', 'Register your batik, embroidery, or food business and receive visitors’ orders on your dashboard.'], admin: ['Control center', 'Verify village businesses, track orders and reports, and manage site content.'] },
       wrong: 'This account is registered as {t}. We selected the matching account type; please sign in again.',
@@ -310,10 +343,12 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
     },
   };
   const tc2 = () => TCOPY[lang];
-  let type = 'user', googleOn = null;
+  let type = 'user', googleOn = null, view = 'auth', resetToken = '', sent = false;
   // Pesan dari server (berbahasa Indonesia) dialihkan ke bahasa yang dipilih.
   const SERVER_EN = {
     'Email atau kata sandi salah.': 'Incorrect email or password.',
+    'Terlalu banyak permintaan. Coba lagi beberapa menit lagi.': 'Too many requests. Please try again in a few minutes.',
+    'Kata sandi minimal 8 karakter.': 'Password must be at least 8 characters.',
     'Email ini sudah terdaftar.': 'This email is already registered.',
     'Email ini sudah terdaftar. Silakan masuk.': 'This email is already registered. Please sign in.',
     'Terlalu banyak percobaan. Coba lagi beberapa menit lagi.': 'Too many attempts. Please try again in a few minutes.',
@@ -547,7 +582,7 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
     document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.l === lang)));
     COPY = I[lang];
     const ge = GOOGLE_ERR[new URLSearchParams(location.search).get('error')];
-    setMode(mode, { animate: false, updateHash: false });
+    if (view === 'auth') setMode(mode, { animate: false, updateHash: false }); else showView(view);
     if (ge) { alertBox.textContent = t(ge); alertBox.hidden = false; }
   }
   document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => {
@@ -572,17 +607,93 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
       $('#gtxt').textContent = t('googleOffBtn');
     }
   }).catch(() => {});
-  $('#forgot').addEventListener('click', () => {
-    alertBox.textContent = t('forgotMsg');
-    alertBox.hidden = false;
+  /* ---------- lupa / reset kata sandi (lewat email) ---------- */
+  const rf = $('#recover'), ra = $('#ralert'), rsub = $('#rsubmit');
+  const authEls = () => [form, $('#orRow'), $('#google'), $('.switch')];
+  const rErr = (id, m) => { const e = $('#err-' + id); e.textContent = m; e.hidden = !m; $('#' + id).setAttribute('aria-invalid', m ? 'true' : 'false'); };
+  function showView(v, notice) {
+    view = v; sent = false;
+    const rec = v !== 'auth';
+    authEls().forEach((el) => { el.hidden = rec; });
+    rf.hidden = !rec;
+    document.querySelector('.types').hidden = rec;
+    ['remail', 'npw', 'npw2'].forEach((i) => rErr(i, ''));
+    ra.hidden = true; ra.classList.remove('ok');
+    if (rec) {
+      $('#rEmailF').hidden = v !== 'forgot'; $('#rPwF').hidden = v !== 'reset'; $('#rPw2F').hidden = v !== 'reset';
+      $('#title').textContent = t(v === 'forgot' ? 'fTitle' : 'rTitle'); $('#sub').textContent = t(v === 'forgot' ? 'fSub' : 'rSub');
+      rsub.hidden = false; rsub.disabled = false; rsub.textContent = t(v === 'forgot' ? 'fSubmit' : 'rSubmit');
+      document.title = t(v === 'forgot' ? 'fTitle' : 'rTitle') + ' – Visit Sendang Duwur';
+      if (v === 'forgot' && fields.email.value) $('#remail').value = fields.email.value.trim();
+      (v === 'forgot' ? $('#remail') : $('#npw')).focus();
+    } else setMode(mode, { animate: false, updateHash: false });
+    if (notice) { const box = rec ? ra : alertBox; box.textContent = notice; box.classList.add('ok'); box.hidden = false; }
+  }
+  $('#forgot').addEventListener('click', () => showView('forgot'));
+  $('#rback').addEventListener('click', () => {
+    if (resetToken) { resetToken = ''; try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+    showView('auth');
   });
+  $('#ntoggle').addEventListener('click', () => {
+    const show = $('#npw').type === 'password';
+    $('#npw').type = $('#npw2').type = show ? 'text' : 'password';
+    $('#ntoggle').textContent = show ? t('hide') : t('show'); $('#ntoggle').setAttribute('aria-pressed', String(show));
+  });
+  rf.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (busy || sent) return;
+    ra.hidden = true; ra.classList.remove('ok');
+    ['remail', 'npw', 'npw2'].forEach((i) => rErr(i, ''));
+    let payload, path;
+    if (view === 'forgot') {
+      const em = $('#remail').value.trim();
+      if (!EMAIL_RE.test(em)) { rErr('remail', t('errEmail')); return $('#remail').focus(); }
+      path = '/api/auth/forgot'; payload = { email: em };
+    } else {
+      const p1 = $('#npw').value, p2 = $('#npw2').value;
+      if (p1.length < 8) { rErr('npw', t('errPwMin')); return $('#npw').focus(); }
+      if (p1 !== p2) { rErr('npw2', t('errPwMatch')); return $('#npw2').focus(); }
+      path = '/api/auth/reset'; payload = { token: resetToken, password: p1 };
+    }
+    busy = true; rsub.disabled = true; rsub.textContent = t('busy');
+    try {
+      const r = await post(path, payload);
+      if (r.ok && view === 'forgot') {
+        sent = true; $('#rEmailF').hidden = true; rsub.hidden = true;
+        ra.textContent = t('fSent'); ra.classList.add('ok'); ra.hidden = false;
+      } else if (r.ok) {
+        try { history.replaceState(null, '', (r.data.type === 'umkm' ? '/login/umkm' : r.data.type === 'admin' ? '/login/admin' : '/login')); } catch (er) {}
+        type = r.data.type || type; resetToken = ''; mode = 'login';
+        showView('auth', t('rDone'));
+      } else if (r.data.expired) {
+        resetToken = ''; try { history.replaceState(null, '', location.pathname); } catch (er) {}
+        showView('forgot', t('rBad'));
+      } else {
+        const f = r.data.fields || {};
+        if (f.email) rErr('remail', srv(f.email)); else if (f.password) rErr('npw', srv(f.password));
+        else { ra.textContent = srv(r.data.error) || t('generic'); ra.hidden = false; }
+      }
+    } catch { ra.textContent = t('netErr'); ra.hidden = false; }
+    busy = false;
+    if (!sent && view !== 'auth') { rsub.disabled = false; rsub.textContent = t(view === 'forgot' ? 'fSubmit' : 'rSubmit'); }
+  });
+  // Tautan dari email: /login?reset=TOKEN
+  try {
+    const tk = new URLSearchParams(location.search).get('reset');
+    if (tk) {
+      resetToken = tk;
+      fetch('/api/auth/reset/check?token=' + encodeURIComponent(tk)).then((r) => r.json())
+        .then((d) => { if (d.valid) showView('reset'); else { resetToken = ''; showView('forgot', t('rBad')); } })
+        .catch(() => showView('reset'));
+    }
+  } catch (e) {}
   const geKey = GOOGLE_ERR[new URLSearchParams(location.search).get('error')];
   if (geKey) { alertBox.textContent = t(geKey); alertBox.hidden = false; }
 
   // Bila sudah masuk, langsung arahkan ke tujuan.
   fetch('/api/auth/me', { credentials: 'same-origin' })
     .then((r) => r.json())
-    .then((d) => { if (d && d.user) location.replace(new URLSearchParams(location.search).has('next') ? nextUrl() : d.user.role === 'admin' ? '/admin' : d.user.role === 'umkm' ? '/umkm' : '/'); })
+    .then((d) => { if (d && d.user && !resetToken) location.replace(new URLSearchParams(location.search).has('next') ? nextUrl() : d.user.role === 'admin' ? '/admin' : d.user.role === 'umkm' ? '/umkm' : '/'); })
     .catch(() => {});
 })();
 </script>

@@ -107,19 +107,18 @@ async function reload(){
  D.stat=st;
  D.rep=r.items.map(x=>({id:x.id,j:x.jenis,l:x.lokasi,d:x.keterangan,n:x.pelapor,t:x.created_at,s:x.status}));
  D.ann=a.items.map(x=>({id:x.id,j:x.judul,k:x.kategori,t:x.isi,s:x.status,d:x.created_at}));
- D.um=u.items.map(x=>({id:x.id,n:x.nama,o:x.pemilik,c:x.kategori,k:x.whatsapp,al:x.alamat,a:!!x.aktif,v:x.verifikasi,vc:x.catatan,oe:x.owner_email}));
+ D.um=u.items.map(x=>({id:x.id,n:x.nama,o:x.pemilik,c:x.kategori,k:x.whatsapp,al:x.alamat,a:!!x.aktif,oe:x.owner_email}));
  D.loc=l.items.map(x=>({id:x.id,n:x.nama,c:x.kategori,buka:x.buka,parkir:x.parkir,toilet:x.toilet}));
  D.ord=o.items;D.usr=s.items}
 function bars(title,h,lbl){const mx=Math.max(1,...h.map(x=>x.n)),W=420,H=120,bw=40,gap=(W-bw*7)/8,hari=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
  return `<div class="chart" role="img" aria-label="${esc(title)}: ${h.map(x=>x.n).join(', ')}"><h3>${esc(title)}</h3><svg viewBox="0 0 ${W} ${H+30}">${h.map((x,i)=>{const bh=Math.round(x.n/mx*H*.78),X=gap+i*(bw+gap),Y=H-bh,d=new Date(x.d+'T00:00:00');return `<rect class="bx${i===6?' t':''}" x="${X}" y="${Y}" width="${bw}" height="${Math.max(bh,2)}" rx="4"/><text class="v" x="${X+bw/2}" y="${Y-5}" text-anchor="middle">${x.n}</text><text x="${X+bw/2}" y="${H+18}" text-anchor="middle">${hari[d.getDay()]}</text>`}).join('')}</svg></div>`}
-function adminStats(){const t=D.stat||{users:{},umkm:{},orders:{},reports:{},ordersHarian:[],usersHarian:[]},U=t.users,tot=(U.user||0)+(U.umkm||0)+(U.admin||0),pend=D.um.filter(u=>u.v==='pending'),ot=Object.values(t.orders).reduce((a,b)=>a+b,0);
- const q=pend.length?pend.slice(0,5).map(u=>`<li class="rp"><div class="tx"><b>${esc(u.n)}</b> <span class="mt">${esc(u.c)}</span><p>${esc(u.o)}${u.oe?' · '+esc(u.oe):''}${u.k?'':' · <span class="na">WhatsApp belum diisi</span>'}</p></div><div class="ctl"><button class="b p" data-a="um-ok" data-i="${u.id}">Setujui</button><button class="b g" data-a="um-no" data-i="${u.id}">Tolak</button></div></li>`).join(''):'<li class="empty">Tidak ada usaha yang menunggu verifikasi.</li>';
+function adminStats(){const t=D.stat||{users:{},umkm:{},orders:{},reports:{},ordersHarian:[],usersHarian:[]},U=t.users,tot=(U.user||0)+(U.umkm||0)+(U.admin||0),ot=Object.values(t.orders).reduce((a,b)=>a+b,0);
+ const nUm=D.um.length,nOwn=D.um.filter(u=>u.oe).length;
  return `<div class="tiles"><a class="tile" href="#pengguna"><b>${tot}</b><span>total akun</span><small>${U.user||0} pengunjung/warga · ${U.umkm||0} UMKM · ${U.admin||0} admin</small></a>
- <a class="tile ${pend.length?'hot':''}" href="#umkm"><b>${pend.length}</b><span>usaha menunggu verifikasi</span><small>${t.umkm.verified||0} terverifikasi · ${t.umkm.rejected||0} ditolak</small></a>
+ <a class="tile" href="#umkm"><b>${nUm}</b><span>usaha warga</span><small>${nOwn} dikelola pemilik lewat akun UMKM</small></a>
  <a class="tile ${t.orders.baru?'hot':''}" href="#pesanan"><b>${ot}</b><span>total pesanan</span><small>${t.orders.baru||0} menunggu · ${t.orders.selesai||0} selesai</small></a>
  <a class="tile ${t.reports.baru?'hot':''}" href="#laporan"><b>${(t.reports.baru||0)+(t.reports.proses||0)+(t.reports.selesai||0)}</b><span>total laporan</span><small>${t.reports.baru||0} belum ditangani</small></a></div>
- <div class="charts">${bars('Pesanan 7 hari terakhir',t.ordersHarian)}${bars('Akun baru 7 hari terakhir',t.usersHarian)}</div>
- <h2>Antrean verifikasi UMKM</h2><ul class="ls">${q}</ul>${pend.length>5?'<a class="b g" href="#umkm">Lihat semua</a>':''}`}
+ <div class="charts">${bars('Pesanan 7 hari terakhir',t.ordersHarian)}${bars('Akun baru 7 hari terakhir',t.usersHarian)}</div>`}
 const F={rep:'semua',um:'Semua',q:''},LF=[['buka','Jam buka'],['parkir','Parkir'],['toilet','Toilet']];
 let tt;const toast=s=>{const t=$('#t');t.textContent=s;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)};
 const chips=(k,list,cur,cnt)=>`<div class="chips">${list.map(v=>`<button type="button" data-a="chip" data-k="${k}" data-v="${esc(v)}" aria-pressed="${v===cur}">${esc(v==='semua'?'Semua':ST[v]||v)}${cnt?' '+cnt(v):''}</button>`).join('')}</div>`;
@@ -164,14 +163,11 @@ lokasi(){
  return `<div class="top"><div><h1>Lokasi di peta</h1><p class="sub">${tot} dari ${D.loc.length*3} isian sudah lengkap. Pengunjung sering bertanya jam buka, parkir, dan toilet.</p></div></div>
  <div class="tw"><table><thead><tr><th>Lokasi</th>${LF.map(f=>`<th>${f[1]}</th>`).join('')}<th></th></tr></thead><tbody>${rows}</tbody></table></div>`}
 };
-const VL={pending:'Menunggu',verified:'Terverifikasi',rejected:'Ditolak'};
-function vCell(u){const b=`<i class="dot ${u.v==='verified'?'on':u.v==='pending'?'proses':'baru'}"></i>${VL[u.v]||u.v}`,own=u.oe?`<span class="mt">${esc(u.oe)}</span>`:'';
- const act=u.v==='pending'?`<button class="b p" data-a="um-ok" data-i="${u.id}">Setujui</button> <button class="b g" data-a="um-no" data-i="${u.id}">Tolak</button>`:u.v==='rejected'?`<button class="b g" data-a="um-ok" data-i="${u.id}">Setujui</button><span class="mt">${esc(u.vc)}</span>`:'';
- return `${b}${own}<div style="margin-top:6px">${act}</div>`}
+function oCell(u){return u.oe?`<span class="mt">${esc(u.oe)}</span>`:'<span class="mt">Dikelola admin</span>'}
 function uTab(){
  const q=F.q.toLowerCase(),L=D.um.filter(u=>(F.um==='Semua'||u.c===F.um)&&(u.n+u.o).toLowerCase().includes(q)).sort((a,b)=>a.n.localeCompare(b.n));
  if(!L.length)return '<p class="empty">Tidak ada usaha yang cocok. Coba kata lain, atau tambah usaha baru.</p>';
- return `<table><thead><tr><th>Usaha</th><th>Kategori</th><th>Verifikasi</th><th>WhatsApp</th><th>Tampil di situs</th><th></th></tr></thead><tbody>${L.map(u=>`<tr class="${u.a?'':'dim'}"><td><div class="who"><div class="th sm" style="--img:var(--s-${ci(u)})"></div><div><b>${esc(u.n)}</b><span class="mt">${esc(u.o)}</span></div></div></td><td>${esc(u.c)}</td><td>${vCell(u)}</td><td>${u.k?esc(u.k):'<span class="na">Belum terdata</span>'}</td><td><button class="sw" role="switch" aria-checked="${u.a}" aria-label="Tampilkan ${esc(u.n)}" data-a="um-tog" data-i="${u.id}"></button></td><td><button class="b g" data-a="um-edit" data-i="${u.id}">Ubah</button> <button class="b g" data-a="um-del" data-i="${u.id}">Hapus</button></td></tr>`).join('')}</tbody></table>`}
+ return `<table><thead><tr><th>Usaha</th><th>Kategori</th><th>Pemilik akun</th><th>WhatsApp</th><th>Tampil di situs</th><th></th></tr></thead><tbody>${L.map(u=>`<tr class="${u.a?'':'dim'}"><td><div class="who"><div class="th sm" style="--img:var(--s-${ci(u)})"></div><div><b>${esc(u.n)}</b><span class="mt">${esc(u.o)}</span></div></div></td><td>${esc(u.c)}</td><td>${oCell(u)}</td><td>${u.k?esc(u.k):'<span class="na">Belum terdata</span>'}</td><td><button class="sw" role="switch" aria-checked="${u.a}" aria-label="Tampilkan ${esc(u.n)}" data-a="um-tog" data-i="${u.id}"></button></td><td><button class="b g" data-a="um-edit" data-i="${u.id}">Ubah</button> <button class="b g" data-a="um-del" data-i="${u.id}">Hapus</button></td></tr>`).join('')}</tbody></table>`}
 
 function form(title,fields,vals,ok){
  const d=$('#dlg');
@@ -193,8 +189,6 @@ const H={
 'um-new':()=>fUm(),'um-edit':i=>fUm(i),'um-del':async i=>{await api(A+'businesses/'+i,{method:'DELETE'});await done('Dihapus')},
 'usr-off':async i=>{await api(A+'users/'+i+'/aktif',{method:'PATCH',body:{aktif:false}});await done('Akun dinonaktifkan')},
 'usr-on':async i=>{await api(A+'users/'+i+'/aktif',{method:'PATCH',body:{aktif:true}});await done('Akun diaktifkan')},
-'um-ok':async i=>{await api(A+'businesses/'+i+'/verifikasi',{method:'PATCH',body:{status:'verified'}});await done('Usaha disetujui, kini tampil di marketplace')},
-'um-no':i=>{const u=find('um',i);form('Tolak: '+u.n,[['c','Alasan penolakan (dilihat pemilik usaha)','area',1]],{c:''},async o=>{await api(A+'businesses/'+i+'/verifikasi',{method:'PATCH',body:{status:'rejected',catatan:o.c}});await done('Usaha ditolak')})},
 'um-tog':async i=>{const u=find('um',i),on=!u.a;await api(A+'businesses/'+i,{method:'PATCH',body:{aktif:on}});await done(on?'Ditampilkan di situs':'Disembunyikan dari situs')},
 'loc-edit':i=>{const l=find('loc',i);form(l.n,LF.map(f=>[f[0],f[1],'in',0]),l,async o=>{await api(A+'locations/'+i,{method:'PUT',body:o});await done('Tersimpan')})}
 };
@@ -217,7 +211,7 @@ const BN={ringkasan:['n6','50% 62%'],laporan:['i2','50% 40%'],pengumuman:['i10',
 const NAV=[['ringkasan','Ringkasan'],['laporan','Laporan'],['pesanan','Pesanan'],['pengumuman','Pengumuman'],['umkm','Usaha warga'],['lokasi','Lokasi'],['pengguna','Pengguna']];
 function route(){
  let h=location.hash.slice(1);if(!V[h])h='ringkasan';
- const c={laporan:D.rep.filter(r=>r.s==='baru').length,pengumuman:D.ann.filter(a=>a.s==='Draf').length,pesanan:D.ord.filter(o=>o.status==='baru').length,umkm:D.um.filter(u=>u.v==='pending').length};
+ const c={laporan:D.rep.filter(r=>r.s==='baru').length,pengumuman:D.ann.filter(a=>a.s==='Draf').length,pesanan:D.ord.filter(o=>o.status==='baru').length};
  $('#nav').innerHTML=NAV.map(n=>`<a href="#${n[0]}" ${n[0]===h?'aria-current="page"':''}>${n[1]}${c[n[0]]?`<em>${c[n[0]]}</em>`:''}</a>`).join('');
  const y=scrollY;M.innerHTML=V[h]();const t=$('.top',M),pg=document.createElement('div'),bn=document.createElement('header');pg.className='pg';bn.className='hd';bn.style.setProperty('--img','var(--b-'+BN[h][0]+')');bn.style.setProperty('--pos',BN[h][1]);while(M.firstChild)pg.appendChild(M.firstChild);bn.appendChild(t);M.append(bn,pg);document.title=NAV.find(n=>n[0]===h)[1]+' – Admin Sendang Duwur';scrollTo(0,y);
 }

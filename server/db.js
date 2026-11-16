@@ -32,6 +32,13 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE TABLE IF NOT EXISTS password_resets (
+  token_hash TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at INTEGER NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_resets_user ON password_resets(user_id);
 CREATE TABLE IF NOT EXISTS reports (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   jenis TEXT NOT NULL,
@@ -149,6 +156,8 @@ CREATE TABLE IF NOT EXISTS orders (
     } catch (e) { db.exec('ROLLBACK'); throw e; }
     finally { db.exec('PRAGMA foreign_keys = ON'); }
   }
+  // Verifikasi admin sudah dihapus: usaha yang masih 'pending' atau 'rejected' langsung dianggap aktif.
+  db.exec("UPDATE businesses SET verifikasi='verified', catatan='' WHERE verifikasi<>'verified'");
   db.exec('CREATE INDEX IF NOT EXISTS idx_orders_business ON orders(business_id, created_at)');
   db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_business_owner ON businesses(owner_id) WHERE owner_id IS NOT NULL');
 })();

@@ -32,7 +32,7 @@ Yang belum ada hanyalah **kredensial dari Google**, karena itu harus dibuat di a
 | Halaman | Akun Google baru | Akun yang sudah ada |
 |---|---|---|
 | `/login` (pengunjung/warga) | dibuat sebagai `user` | masuk bila role-nya `user` |
-| `/login/umkm` | dibuat sebagai `umkm` dengan usaha berstatus *pending*; pemilik melengkapi profil & WhatsApp di `/umkm` | masuk bila role-nya `umkm` |
+| `/login/umkm` | dibuat sebagai `umkm`, langsung aktif; pemilik melengkapi profil & WhatsApp di `/umkm` (usaha tampil di marketplace setelah WhatsApp terisi) | masuk bila role-nya `umkm` |
 | `/login/admin` | **ditolak** (admin tidak bisa dibuat lewat Google) | masuk hanya bila email Google sama dengan akun admin yang sudah ada |
 
 Bila email sudah terdaftar dengan jenis akun lain, pengguna diarahkan ke halaman masuk yang sesuai dengan pesan penjelasan.

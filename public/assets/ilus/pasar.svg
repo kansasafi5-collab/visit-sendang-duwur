@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Ilustrasi pasar tradisional dengan lapak-lapak beratap terpal">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9791e"/><stop offset="1" stop-color="#6d3a0a"/></linearGradient></defs>
+<rect width="480" height="360" fill="url(#g)"/>
+<path d="M0 70q120 30 240 0t240 0" fill="none" stroke="#3a2a20" stroke-width="2" opacity=".6"/>
+<g><path d="M30 72l16 30 16-30zM86 74l16 30 16-30zM142 76l16 30 16-30zM198 76l16 30 16-30zM254 76l16 30 16-30zM310 74l16 30 16-30zM366 72l16 30 16-30zM422 70l16 30 16-30z" fill="#f2c14e" opacity=".85"/></g>
+<ellipse cx="240" cy="306" rx="150" ry="11" fill="#000" opacity=".22"/>
+<g><rect x="96" y="176" width="6" height="108" fill="#6b4423"/><rect x="182" y="176" width="6" height="108" fill="#6b4423"/><path d="M84 176h116l-8-34H92z" fill="#2a6199"/><path d="M92 142h24l-6 34H84zM140 142h24l-2 34h-24z" fill="#f6e6e2"/><rect x="96" y="236" width="92" height="48" fill="#8a5a30"/><circle cx="116" cy="228" r="9" fill="#e8625a"/><circle cx="136" cy="230" r="9" fill="#e8625a"/><circle cx="156" cy="228" r="9" fill="#d9a000"/><circle cx="174" cy="230" r="9" fill="#3f9b6b"/></g>
+<g><rect x="196" y="156" width="7" height="128" fill="#6b4423"/><rect x="286" y="156" width="7" height="128" fill="#6b4423"/><path d="M184 156h122l-9-40H193z" fill="#9b2d20"/><path d="M193 116h26l-7 40h-28zM245 116h26l-3 40h-26z" fill="#f6e6e2"/><rect x="200" y="226" width="90" height="58" fill="#b07a45"/><path d="M200 246h90M200 266h90" stroke="#6b4423" stroke-width="2"/><rect x="212" y="206" width="26" height="22" rx="3" fill="#f6e6e2"/><rect x="244" y="200" width="30" height="28" rx="3" fill="#2a6199"/></g>
+<g><rect x="298" y="180" width="6" height="104" fill="#6b4423"/><rect x="384" y="180" width="6" height="104" fill="#6b4423"/><path d="M288 180h112l-8-34H296z" fill="#3f9b6b"/><path d="M296 146h24l-6 34h-28zM344 146h24l-2 34h-24z" fill="#f6e6e2"/><rect x="302" y="238" width="84" height="46" fill="#8a5a30"/><path d="M312 238q0-20 14-20t14 20zM348 238q0-20 14-20t14 20z" fill="#d9a000"/></g>
+</svg>

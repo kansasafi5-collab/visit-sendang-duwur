@@ -85,5 +85,6 @@ seed.ensureAdmin().then(() => {
     const base = process.env.BASE_URL || `http://localhost:${PORT}`;
     if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) console.log(`Login Google: AKTIF. Redirect URI yang harus terdaftar di Google Cloud: ${base}/api/auth/google/callback`);
     else console.log('Login Google: BELUM DIKONFIGURASI (isi GOOGLE_CLIENT_ID & GOOGLE_CLIENT_SECRET di .env, lihat GOOGLE_SETUP.md).');
+    console.log(require('./mail').enabled() ? 'Email reset kata sandi: AKTIF (SMTP).' : 'Email reset kata sandi: SMTP BELUM DIISI di .env, tautan reset hanya dicetak di konsol ini (lihat README).');
   });
 });

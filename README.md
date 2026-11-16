@@ -33,6 +33,7 @@ Pertama kali jalan, database `data/sendangduwur.db` dibuat otomatis (SQLite), di
 
 - **Akun**: daftar, masuk, keluar, "ingat saya 30 hari". Password di-hash scrypt, sesi cookie `httpOnly`, rate limit, proteksi CSRF (cek Origin).
 - **Login Google**: aktif bila `GOOGLE_CLIENT_ID` dan `GOOGLE_CLIENT_SECRET` diisi (redirect URI: `{BASE_URL}/api/auth/google/callback`). Tanpa itu, tombol menampilkan pesan "belum diaktifkan".
+- **Lupa kata sandi**: tautan reset sekali pakai (berlaku 1 jam) dikirim ke email lewat SMTP. Isi `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` di `.env` (contoh Gmail ada di `.env.example`, perlu "App password"). Tanpa SMTP, tautan hanya dicetak di konsol server dan email tidak terkirim. Setelah reset, semua sesi akun itu keluar.
 - **Heritage Passport**: stempel tersimpan di akun (sinkron lintas perangkat); tanpa akun tetap di perangkat.
 - **Marketplace UMKM**: daftar dari database, dikelola admin (tambah/ubah/sembunyikan/hapus). Pesanan dicatat di server lalu pembeli diarahkan ke WhatsApp penjual.
 - **Laporan fasilitas**: dicatat di server dengan nomor tiket, pelapor bisa melihat statusnya; admin mengubah status (Baru, Diproses, Selesai).
@@ -50,7 +51,7 @@ Pertama kali jalan, database `data/sendangduwur.db` dibuat otomatis (SQLite), di
 | `admin` | **Tidak bisa daftar sendiri.** Dibuat dari `ADMIN_EMAIL`/`ADMIN_PASSWORD` di `.env` | `/admin` |
 
 - Role dibaca dari database di setiap request; pilihan tab di halaman login hanya dicocokkan dengan role di database (tab tidak memberi akses).
-- Usaha dari akun UMKM berstatus `pending` dan **tidak tampil di marketplace** sampai admin menyetujui (menu Usaha warga). Bila ditolak, alasan dilihat pemilik; setelah data diperbaiki otomatis diajukan ulang.
+- Pendaftaran UMKM **tanpa persetujuan admin**: usaha langsung aktif dan tampil di marketplace begitu nomor WhatsApp terisi. Admin tetap bisa menyembunyikan atau menghapus usaha (menu Usaha warga).
 - Database lama dimigrasi otomatis saat server dijalankan (tabel `users` dibangun ulang tanpa kehilangan data; usaha lama otomatis `verified`). Cadangkan `data/sendangduwur.db` sebelum menjalankan versi ini pertama kali.
 - Login Google berlaku di ketiga halaman masuk (aturan lengkap di `GOOGLE_SETUP.md`). Admin tidak bisa dibuat lewat Google, dan email Google wajib terverifikasi.
 - Pendaftar pengunjung memilih *Pengunjung* atau *Warga desa*; ini hanya atribut akun, bukan role.
@@ -77,5 +78,4 @@ public/   index.html, login.html, admin.html, assets/img/*
 ## Catatan
 
 - Konten editorial (sejarah, batik, perangkat desa, loker, sumber) masih tertulis di `public/index.html`.
-- Reset password lewat email belum ada; admin bisa mengatur ulang akun lewat database.
 - Foto asal media/Disparbud perlu izin atau diganti dokumentasi sendiri sebelum publikasi (catatan dari situs aslinya).

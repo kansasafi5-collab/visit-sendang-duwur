@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Ilustrasi canting dan kain batik tulis">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a93222"/><stop offset="1" stop-color="#5e1a16"/></linearGradient>
+<pattern id="bg" width="60" height="60" patternUnits="userSpaceOnUse"><g fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1.5"><ellipse cx="30" cy="14" rx="7" ry="13"/><ellipse cx="30" cy="46" rx="7" ry="13"/><ellipse cx="14" cy="30" rx="13" ry="7"/><ellipse cx="46" cy="30" rx="13" ry="7"/></g></pattern>
+<pattern id="k" width="44" height="44" patternUnits="userSpaceOnUse"><g fill="none" stroke="#8c2f2a" stroke-width="2"><ellipse cx="22" cy="10" rx="6" ry="10"/><ellipse cx="22" cy="34" rx="6" ry="10"/><ellipse cx="10" cy="22" rx="10" ry="6"/><ellipse cx="34" cy="22" rx="10" ry="6"/></g><circle cx="22" cy="22" r="2.5" fill="#d9a000"/></pattern>
+<clipPath id="r"><rect x="240" y="170" width="94" height="110"/></clipPath></defs>
+<rect width="480" height="360" fill="url(#g)"/><rect width="480" height="360" fill="url(#bg)"/>
+<ellipse cx="240" cy="296" rx="120" ry="12" fill="#000" opacity=".22"/>
+<rect x="146" y="168" width="188" height="116" rx="6" fill="#f6e6e2"/>
+<g clip-path="url(#r)"><rect x="146" y="168" width="188" height="116" fill="url(#k)"/></g>
+<path d="M240 170v110" stroke="#3a2a20" stroke-width="2" stroke-dasharray="4 4" opacity=".5"/>
+<rect x="146" y="268" width="188" height="16" rx="0" fill="#d9a000"/><path d="M146 268h188" stroke="#8c2f2a" stroke-width="3"/>
+<path d="M300 66L226 148" stroke="#6b4423" stroke-width="10" stroke-linecap="round"/>
+<ellipse cx="220" cy="156" rx="17" ry="11" transform="rotate(-48 220 156)" fill="#c8843a"/><ellipse cx="220" cy="156" rx="11" ry="6" transform="rotate(-48 220 156)" fill="#3a2a20"/>
+<path d="M210 166L196 184" stroke="#c8843a" stroke-width="5" stroke-linecap="round"/>
+<path d="M196 184q-12 10-30 6" stroke="#3a2a20" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<circle cx="164" cy="190" r="3" fill="#3a2a20"/>
+<g fill="#d9a000" opacity=".9"><circle cx="70" cy="70" r="5"/><circle cx="420" cy="90" r="4"/><circle cx="400" cy="300" r="5"/><circle cx="60" cy="280" r="4"/></g>
+</svg>

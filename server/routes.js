@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
 const db = require('./db');
 const { hashPassword, verifyPassword, DUMMY, makeAuth } = require('./auth');
+const mail = require('./mail');
 
 const auth = makeAuth(db);
 const router = express.Router();
@@ -35,6 +36,7 @@ const TYPE_LABEL = { user: 'Pengunjung / Warga', umkm: 'Pelaku UMKM', admin: 'Ad
 const PHONE_RE = /^[0-9+\-\s]{8,20}$/;
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false, message: { error: 'Terlalu banyak percobaan. Coba lagi beberapa menit lagi.' } });
+const forgotLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: true, legacyHeaders: false, message: { error: 'Terlalu banyak permintaan. Coba lagi beberapa menit lagi.' } });
 const writeLimiter = rateLimit({ windowMs: 10 * 60 * 1000, limit: 40, standardHeaders: true, legacyHeaders: false, message: { error: 'Terlalu banyak kiriman. Coba lagi nanti.' } });
 
 router.use(auth.load);
@@ -67,8 +69,8 @@ router.post('/auth/register', authLimiter, ah(async (req, res) => {
   try {
     id = db.transaction(() => {
       const uid = db.prepare('INSERT INTO users (name,email,pass_hash,role,asal) VALUES (?,?,?,?,?)').run(name, email, hash, type, asal).lastInsertRowid;
-      // Usaha baru berstatus 'pending': belum tampil di marketplace sampai admin menyetujui.
-      if (biz) db.prepare("INSERT INTO businesses (nama,pemilik,kategori,alamat,whatsapp,owner_id,verifikasi) VALUES (?,?,?,?,?,?, 'pending')").run(biz.namaUsaha, name, biz.kategori, biz.alamat, biz.whatsapp, uid);
+      // Usaha langsung aktif dan tampil di marketplace, tanpa persetujuan admin.
+      if (biz) db.prepare("INSERT INTO businesses (nama,pemilik,kategori,alamat,whatsapp,owner_id,verifikasi) VALUES (?,?,?,?,?,?, 'verified')").run(biz.namaUsaha, name, biz.kategori, biz.alamat, biz.whatsapp, uid);
       return uid;
     })();
   } catch { return res.status(409).json({ error: 'Email ini sudah terdaftar.', fields: { email: 'Email ini sudah terdaftar. Silakan masuk.' } }); }
@@ -88,6 +90,44 @@ router.post('/auth/login', authLimiter, ah(async (req, res) => {
     return res.status(403).json({ error: `Akun ini terdaftar sebagai ${TYPE_LABEL[TYPE_OF_ROLE[u.role]]}. Pilih jenis akun yang sesuai.`, wrongType: TYPE_OF_ROLE[u.role] });
   auth.startSession(res, u.id, !!req.body.remember);
   res.json({ user: pubUser(u) });
+}));
+
+/* --- Lupa kata sandi: tautan sekali pakai (berlaku 1 jam) dikirim ke email. Respons selalu sama
+       agar orang luar tidak bisa menebak email mana yang terdaftar. --- */
+const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
+router.post('/auth/forgot', forgotLimiter, ah(async (req, res) => {
+  const email = str(req.body.email, 254).toLowerCase();
+  if (!EMAIL_RE.test(email)) return bad(res, 'Masukkan alamat email yang valid.', { email: 'Masukkan alamat email yang valid.' });
+  const u = db.prepare('SELECT id,name,email,role,aktif FROM users WHERE email=?').get(email);
+  if (u && u.aktif) {
+    const recent = db.prepare('SELECT 1 FROM password_resets WHERE user_id=? AND created_at>?').get(u.id, Date.now() - 60 * 1000);
+    if (!recent) {
+      const token = crypto.randomBytes(32).toString('base64url');
+      db.prepare('DELETE FROM password_resets WHERE user_id=? OR expires_at<?').run(u.id, Date.now());
+      db.prepare('INSERT INTO password_resets (token_hash,user_id,expires_at,created_at) VALUES (?,?,?,?)').run(sha256(token), u.id, Date.now() + 60 * 60 * 1000, Date.now());
+      const link = `${baseUrl(req)}${loginPath(TYPE_OF_ROLE[u.role])}?reset=${token}`;
+      try { await mail.sendReset(u.email, u.name, link); } catch (e) { console.error('Gagal mengirim email reset:', e.message); }
+    }
+  }
+  res.json({ ok: true });
+}));
+router.get('/auth/reset/check', (req, res) => {
+  const t = typeof req.query.token === 'string' ? req.query.token : '';
+  res.json({ valid: !!(t && db.prepare('SELECT 1 FROM password_resets WHERE token_hash=? AND expires_at>?').get(sha256(t), Date.now())) });
+});
+router.post('/auth/reset', authLimiter, ah(async (req, res) => {
+  const t = typeof req.body.token === 'string' ? req.body.token : '', pw = typeof req.body.password === 'string' ? req.body.password : '';
+  if (pw.length < 8 || pw.length > 128) return bad(res, 'Kata sandi minimal 8 karakter.', { password: 'Kata sandi minimal 8 karakter.' });
+  const r = t ? db.prepare('SELECT user_id FROM password_resets WHERE token_hash=? AND expires_at>?').get(sha256(t), Date.now()) : null;
+  if (!r) return res.status(400).json({ error: 'Tautan reset tidak valid atau sudah kedaluwarsa. Minta tautan baru.', expired: true });
+  const hash = await hashPassword(pw);
+  const u = db.prepare('SELECT role FROM users WHERE id=?').get(r.user_id);
+  db.transaction(() => {
+    db.prepare('UPDATE users SET pass_hash=? WHERE id=?').run(hash, r.user_id);
+    db.prepare('DELETE FROM password_resets WHERE user_id=?').run(r.user_id);
+    db.prepare('DELETE FROM sessions WHERE user_id=?').run(r.user_id); // keluar dari semua perangkat
+  })();
+  res.json({ ok: true, type: u ? TYPE_OF_ROLE[u.role] : 'user' });
 }));
 
 router.post('/auth/logout', (req, res) => { auth.endSession(req, res); res.json({ ok: true }); });
@@ -133,8 +173,8 @@ router.get('/auth/google/callback', ah(async (req, res) => {
       const role = type === 'umkm' ? 'umkm' : 'user';
       const id = db.transaction(() => {
         const uid = db.prepare('INSERT INTO users (name,email,google_id,role,asal) VALUES (?,?,?,?,?)').run(nama, email, info.sub, role, role === 'umkm' ? 'warga' : 'pengunjung').lastInsertRowid;
-        // Usaha dibuat 'pending' dengan data minimal; pemilik melengkapinya di dashboard, lalu admin memverifikasi.
-        if (role === 'umkm') db.prepare("INSERT INTO businesses (nama,pemilik,kategori,owner_id,verifikasi) VALUES (?,?,?,?, 'pending')").run('Usaha ' + nama.split(' ')[0], nama, 'Kuliner & toko', uid);
+        // Usaha dibuat dengan data minimal; pemilik melengkapinya (terutama WhatsApp) di dashboard. Tampil di marketplace setelah WhatsApp terisi.
+        if (role === 'umkm') db.prepare("INSERT INTO businesses (nama,pemilik,kategori,owner_id,verifikasi) VALUES (?,?,?,?, 'verified')").run('Usaha ' + nama.split(' ')[0], nama, 'Kuliner & toko', uid);
         return uid;
       })();
       u = db.prepare('SELECT * FROM users WHERE id=?').get(id);
@@ -160,7 +200,7 @@ router.get('/announcements', (_req, res) => {
 });
 
 router.get('/businesses', (_req, res) => {
-  const rows = db.prepare("SELECT id,nama,pemilik,kategori,alamat,whatsapp FROM businesses WHERE aktif=1 AND verifikasi='verified' ORDER BY nama COLLATE NOCASE").all();
+  const rows = db.prepare("SELECT id,nama,pemilik,kategori,alamat,whatsapp FROM businesses WHERE aktif=1 AND (owner_id IS NULL OR whatsapp<>'') ORDER BY nama COLLATE NOCASE").all();
   res.json({ items: rows.map((b) => ({ ...b, wa: wa(b.whatsapp) })) });
 });
 
@@ -190,7 +230,7 @@ router.get('/reports/track', (req, res) => {
 /* Pesanan dari Marketplace UMKM: dicatat dulu, lalu pembeli diarahkan ke WhatsApp penjual. */
 router.post('/orders', writeLimiter, (req, res) => {
   const bid = Number(req.body.businessId), pemesan = str(req.body.pemesan, 60), pesanan = text(req.body.pesanan, 1000), jumlah = Math.floor(Number(req.body.jumlah));
-  const b = Number.isInteger(bid) ? db.prepare("SELECT id,nama,whatsapp FROM businesses WHERE id=? AND aktif=1 AND verifikasi='verified'").get(bid) : null;
+  const b = Number.isInteger(bid) ? db.prepare("SELECT id,nama,whatsapp FROM businesses WHERE id=? AND aktif=1 AND (owner_id IS NULL OR whatsapp<>'')").get(bid) : null;
   if (!b) return bad(res, 'Usaha tidak ditemukan.');
   const fields = {};
   if (pemesan.length < 2) fields.pemesan = 'Tulis nama Anda.';
@@ -267,8 +307,7 @@ umkm.put('/me', (req, res) => {
   if (!kategori) fields.kategori = 'Pilih kategori.';
   if (!PHONE_RE.test(whatsapp)) fields.whatsapp = 'Nomor WhatsApp harus angka (8–20 digit).';
   if (Object.keys(fields).length) return bad(res, 'Data belum valid.', fields);
-  // Usaha yang ditolak otomatis diajukan ulang setelah diperbaiki.
-  db.prepare("UPDATE businesses SET nama=?,kategori=?,whatsapp=?,alamat=?, verifikasi=CASE WHEN verifikasi='rejected' THEN 'pending' ELSE verifikasi END, catatan=CASE WHEN verifikasi='rejected' THEN '' ELSE catatan END WHERE id=?").run(nama, kategori, whatsapp, alamat, b.id);
+  db.prepare('UPDATE businesses SET nama=?,kategori=?,whatsapp=?,alamat=? WHERE id=?').run(nama, kategori, whatsapp, alamat, b.id);
   res.json({ ok: true });
 });
 umkm.patch('/orders/:id', (req, res) => {
@@ -287,7 +326,7 @@ admin.get('/summary', (_req, res) => {
   const c = (sql) => db.prepare(sql).get().n;
   res.json({
     laporanBaru: c("SELECT COUNT(*) n FROM reports WHERE status='baru'"), pesananBaru: c("SELECT COUNT(*) n FROM orders WHERE status='baru'"),
-    pengguna: c("SELECT COUNT(*) n FROM users WHERE role='user'"), umkmPending: c("SELECT COUNT(*) n FROM businesses WHERE verifikasi='pending'"),
+    pengguna: c("SELECT COUNT(*) n FROM users WHERE role='user'"),
   });
 });
 
@@ -328,16 +367,6 @@ const bizData = (b) => {
   return { nama, pemilik, kategori, whatsapp, alamat, aktif: b.aktif === undefined ? 1 : b.aktif ? 1 : 0 };
 };
 admin.get('/businesses', (_req, res) => res.json({ items: db.prepare('SELECT b.*, (SELECT email FROM users WHERE id=b.owner_id) owner_email FROM businesses b ORDER BY b.nama COLLATE NOCASE').all() }));
-admin.patch('/businesses/:id/verifikasi', (req, res) => {
-  const st = req.body.status;
-  if (!['pending', 'verified', 'rejected'].includes(st)) return bad(res, 'Status tidak valid.');
-  const catatan = text(req.body.catatan, 300);
-  const cur = db.prepare('SELECT whatsapp,owner_id FROM businesses WHERE id=?').get(req.params.id);
-  if (cur && st === 'verified' && cur.owner_id && !cur.whatsapp) return bad(res, 'Pemilik belum melengkapi nomor WhatsApp. Minta pemilik melengkapi profil dulu.');
-  if (st === 'rejected' && catatan.length < 3) return bad(res, 'Tulis alasan penolakan agar pemilik tahu apa yang perlu diperbaiki.');
-  const r = db.prepare('UPDATE businesses SET verifikasi=?, catatan=? WHERE id=?').run(st, st === 'rejected' ? catatan : '', req.params.id);
-  r.changes ? res.json({ ok: true }) : res.status(404).json({ error: 'Tidak ditemukan.' });
-});
 admin.post('/businesses', (req, res) => {
   const b = bizData(req.body); if (!b) return bad(res, 'Nama, pemilik, dan kategori wajib; nomor WhatsApp harus angka.');
   const id = db.prepare('INSERT INTO businesses (nama,pemilik,kategori,alamat,whatsapp,aktif) VALUES (?,?,?,?,?,?)').run(b.nama, b.pemilik, b.kategori, b.alamat, b.whatsapp, b.aktif).lastInsertRowid;
@@ -393,7 +422,6 @@ admin.get('/stats', (_req, res) => {
   res.json({
     users: by(all('SELECT role, COUNT(*) n FROM users GROUP BY role'), 'role'),
     warga: db.prepare("SELECT COUNT(*) n FROM users WHERE role='user' AND asal='warga'").get().n,
-    umkm: by(all('SELECT verifikasi, COUNT(*) n FROM businesses GROUP BY verifikasi'), 'verifikasi'),
     orders: by(all('SELECT status, COUNT(*) n FROM orders GROUP BY status'), 'status'),
     reports: by(all('SELECT status, COUNT(*) n FROM reports GROUP BY status'), 'status'),
     ordersHarian: last7("SELECT date(created_at,'+7 hours') d, COUNT(*) n FROM orders WHERE date(created_at,'+7 hours')>=date('now','+7 hours','-6 days') GROUP BY d"),

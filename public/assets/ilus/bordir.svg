@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Ilustrasi ram bordir dengan bunga sulaman, jarum, dan benang">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2e69a3"/><stop offset="1" stop-color="#15355a"/></linearGradient>
+<pattern id="x" width="28" height="28" patternUnits="userSpaceOnUse"><g stroke="#fff" stroke-opacity=".16" stroke-width="1.6" stroke-linecap="round"><path d="M5 5l5 5M10 5l-5 5"/><path d="M19 19l5 5M24 19l-5 5"/></g></pattern></defs>
+<rect width="480" height="360" fill="url(#g)"/><rect width="480" height="360" fill="url(#x)"/>
+<ellipse cx="240" cy="304" rx="110" ry="10" fill="#000" opacity=".22"/>
+<circle cx="240" cy="186" r="96" fill="none" stroke="#b9843f" stroke-width="12"/><circle cx="240" cy="186" r="89" fill="#f6f1e4"/><circle cx="240" cy="186" r="102" fill="none" stroke="#d6a864" stroke-width="2" opacity=".7"/>
+<rect x="231" y="76" width="18" height="18" rx="3" fill="#8a5d27"/><rect x="236" y="68" width="8" height="12" rx="2" fill="#6e481c"/>
+<g transform="translate(240 186)"><g fill="#e8625a"><ellipse cy="-30" rx="14" ry="22"/><ellipse cy="-30" rx="14" ry="22" transform="rotate(60)"/><ellipse cy="-30" rx="14" ry="22" transform="rotate(120)"/><ellipse cy="-30" rx="14" ry="22" transform="rotate(180)"/><ellipse cy="-30" rx="14" ry="22" transform="rotate(240)"/><ellipse cy="-30" rx="14" ry="22" transform="rotate(300)"/></g>
+<g stroke="#fff" stroke-opacity=".55" stroke-width="1.4" stroke-dasharray="3 3"><path d="M0-48v-6" /><path d="M0-12v-36" transform="rotate(60)"/><path d="M0-12v-36" transform="rotate(180)"/><path d="M0-12v-36" transform="rotate(300)"/></g>
+<circle r="13" fill="#d9a000"/><circle r="6" fill="#a97800"/></g>
+<path d="M170 232q-30 6-34 28q26-2 34-28zM310 232q30 6 34 28q-26-2-34-28z" fill="#3f9b6b"/>
+<path d="M356 300L314 238" stroke="#e9e9e9" stroke-width="3" stroke-linecap="round"/><ellipse cx="357" cy="302" rx="2" ry="3" fill="none" stroke="#bbb"/>
+<path d="M314 238q-28-4-40 14t-36 6" fill="none" stroke="#e8625a" stroke-width="2.4" stroke-linecap="round"/>
+<rect x="388" y="236" width="42" height="64" rx="5" fill="#d9a000"/><rect x="388" y="236" width="42" height="12" rx="4" fill="#a97800"/><rect x="388" y="288" width="42" height="12" rx="4" fill="#a97800"/>
+<path d="M392 252h34M392 258h34M392 264h34M392 270h34M392 276h34M392 282h34" stroke="#e8625a" stroke-width="3"/>
+</svg>
