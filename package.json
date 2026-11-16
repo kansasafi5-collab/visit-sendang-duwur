@@ -1,0 +1,20 @@
+{
+  "name": "visit-sendang-duwur",
+  "version": "1.0.0",
+  "description": "Situs wisata Desa Sendang Duwur dengan backend (auth, UMKM, laporan, admin)",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env server/index.js",
+    "dev": "node --watch --disable-warning=ExperimentalWarning --env-file-if-exists=.env server/index.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.4",
+    "helmet": "^8.3.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22.5"
+  }
+}
