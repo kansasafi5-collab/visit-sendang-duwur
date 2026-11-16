@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Masuk – Visit Sendang Duwur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>:root { --acc: #9b2d20; --gold: #d9a000; --ink: #0f2a21; --m: clamp(0px, 2.6vw, 40px); }
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; min-height: 100vh; min-height: 100svh; background: #0b1511; color: #fff; font: 16px/1.55 'DM Sans', system-ui, sans-serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+/* latar buram di luar bingkai */
+.bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+.bg img { width: 100%; height: 100%; object-fit: cover; filter: blur(40px) saturate(1.2); transform: scale(1.2); }
+
+/* bingkai berfoto */
+.frame {
+  position: relative; isolation: isolate; overflow: hidden;
+  margin: var(--m); min-height: calc(100svh - 2 * var(--m));
+  border-radius: clamp(0px, 2.2vw, 32px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center;
+}
+.shot { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+.frame::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(8,14,10,.74), rgba(8,14,10,.3) 62%, rgba(8,14,10,.42)); }
+
+/* teks kiri */
+.intro { align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: calc(40px + env(safe-area-inset-top, 0px)) clamp(24px, 6vw, 88px) 40px; }
+/* kata Sendang Duwur memakai huruf yang sama dengan logo di situs utama */
+.logo { font: 600 26px/1 Fraunces, Georgia, serif; margin-bottom: 34px; align-self: flex-start; }
+.logo small { display: block; margin-top: 7px; font: 400 14px 'DM Sans', system-ui, sans-serif; opacity: .85; }
+.hero { font: 600 clamp(46px, 6.3vw, 96px)/1.02 Fraunces, Georgia, serif; letter-spacing: -.025em; text-wrap: balance; margin-bottom: 22px; }
+.sm { max-width: 25em; font-size: 18px; line-height: 1.5; opacity: .95; text-wrap: pretty; }
+
+/* kartu kaca */
+.card {
+  justify-self: center; width: min(100%, 440px); margin: 32px clamp(20px, 4vw, 64px) 32px 0; padding: 36px 40px 30px;
+  border-radius: 32px; background: rgba(255, 255, 255, .17); border: 1px solid rgba(255, 255, 255, .28);
+  -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+}
+h1 { margin: 0 0 6px; font: 600 29px/1.15 Fraunces, Georgia, serif; letter-spacing: -.01em; }
+.sub { font-size: 14px; opacity: .9; margin-bottom: 22px; }
+
+.alert { background: rgba(0, 0, 0, .38); border-left: 4px solid #ff8a7a; padding: 10px 14px; margin-bottom: 16px; font-size: 14px; border-radius: 4px; }
+.field { margin-bottom: 16px; }
+label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
+.field input { display: block; width: 100%; padding: 14px 16px; border: 0; border-radius: 8px; background: #fff; color: #1b231f; font-size: 16px; outline: none; }
+.field input::placeholder { color: #7a817c; }
+.field input:focus { box-shadow: 0 0 0 3px var(--gold); }
+.field input[aria-invalid="true"] { box-shadow: 0 0 0 2px #ff6b5b; }
+.pw { position: relative; }
+.pw input { padding-right: 100px; }
+.pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; padding: 8px 10px; font-size: 13px; font-weight: 600; color: var(--acc); }
+.hint { font-size: 13px; opacity: .9; margin-top: 6px; }
+.err { font-size: 13.5px; font-weight: 600; color: #ffc9c0; margin-top: 6px; }
+.hint:has(+ .err:not([hidden])) { display: none; }
+
+.row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 2px 0 22px; font-size: 14px; }
+.check { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; font-weight: 400; cursor: pointer; }
+.check input { width: 17px; height: 17px; margin: 0; accent-color: var(--acc); }
+.forgot { background: none; border: 0; padding: 0; color: #fff; font-size: 14px; text-decoration: underline; cursor: pointer; }
+
+.submit { display: block; width: 100%; padding: 15px; border: 0; border-radius: 8px; background: var(--acc); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+.submit:hover { filter: brightness(1.15); }
+.submit[disabled] { opacity: .65; cursor: progress; }
+
+.or { display: flex; align-items: center; gap: 14px; margin: 20px 0; font-size: 14px; }
+.or::before, .or::after { content: ""; flex: 1; border-top: 1px solid rgba(255, 255, 255, .55); }
+.google { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; border-radius: 8px; background: rgba(255, 255, 255, .16); font-weight: 500; font-size: 15px; }
+.google:hover { background: rgba(255, 255, 255, .26); }
+.google[aria-disabled="true"] { cursor: not-allowed; }
+.switch { text-align: center; margin-top: 22px; font-size: 15px; }
+.switch button { background: none; border: 0; padding: 0; color: #fff; font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+/* sambutan setelah berhasil masuk */
+.welcome { position: fixed; inset: 0; z-index: 10; background: var(--ink); display: grid; place-content: center; justify-items: center; text-align: center; gap: 12px; padding: 24px; }
+.welcome h2 { font: 600 clamp(38px, 6vw, 76px)/1.05 Fraunces, Georgia, serif; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+.welcome p { color: #c5d0c6; }
+.welcome .go { margin-top: 6px; }
+.welcome button { margin-top: 14px; padding: 12px 24px; background: none; border: 1px solid #fff; color: #fff; font-weight: 600; cursor: pointer; }
+@media (prefers-reduced-motion: no-preference) {
+  .welcome { animation: swap .5s ease-out; }
+  .swap { animation: swap .28s ease-out; }
+  @keyframes swap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+
+/* pilihan jenis akun */
+.types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 22px; padding: 0; border: 0; }
+.types legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.ty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; cursor: pointer; text-align: center; line-height: 1.2; transition: background .2s, border-color .2s, color .2s; }
+.ty svg { width: 24px; height: 24px; }
+.ty b { font-size: 12.5px; font-weight: 700; }
+.ty small { font-size: 10.5px; opacity: .8; }
+.ty:hover { background: rgba(255,255,255,.2); }
+.ty[aria-checked="true"] { background: #fff; color: var(--ink); border-color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.ty[aria-checked="true"] svg { color: var(--acc); }
+.field select { display: block; width: 100%; padding: 14px 16px; border: 0; border-radius: 8px; background: #fff; color: #1b231f; font-size: 16px; outline: none; }
+.field select:focus { box-shadow: 0 0 0 3px var(--gold); }
+.note { font-size: 13px; line-height: 1.45; background: rgba(0,0,0,.28); border-left: 4px solid var(--gold); padding: 9px 12px; border-radius: 4px; margin-bottom: 16px; }
+@media (max-width: 380px) { .ty small { display: none; } }
+
+/* slogan */
+.kick { font: 700 12px/1.3 'DM Sans', system-ui, sans-serif; letter-spacing: .22em; text-transform: uppercase; color: #f2c14e; margin-bottom: 16px; }
+.hero.slogan { font-size: clamp(38px, 4.9vw, 76px); line-height: 1.05; letter-spacing: .01em; text-transform: uppercase; }
+.hero.slogan em { font-style: normal; color: #f2c14e; }
+/* pilihan bahasa */
+.lang { position: absolute; top: calc(18px + env(safe-area-inset-top, 0px)); right: clamp(16px, 3vw, 36px); z-index: 5; display: inline-flex; padding: 3px; border-radius: 99px; background: rgba(255, 255, 255, .17); border: 1px solid rgba(255, 255, 255, .28); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.lang button { background: none; border: 0; color: #fff; font: 700 12px 'DM Sans', system-ui, sans-serif; letter-spacing: .08em; padding: 0 13px; height: 32px; border-radius: 99px; cursor: pointer; transition: background .2s, color .2s; }
+.lang button[aria-pressed="true"] { background: #fff; color: var(--ink); }
+.lang button:not([aria-pressed="true"]):hover { background: rgba(255, 255, 255, .2); }
+
+@media (max-width: 900px) {
+  :root { --m: 0px; }
+  .frame { grid-template-columns: 1fr; align-items: start; }
+  .intro { padding-bottom: 8px; }
+  .hero { font-size: clamp(54px, 16vw, 88px); margin-bottom: 14px; }
+  .hero.slogan { font-size: clamp(28px, 8.2vw, 46px); }
+  .kick { margin-bottom: 10px; font-size: 11px; }
+  .logo { margin-bottom: 26px; }
+  .sm { display: none; }
+  .card { margin: 16px; width: calc(100% - 32px); padding: 28px 24px 24px; }
+}
+</style>
+</head>
+<body>
+<div class="bg"><img src="/assets/img/0b81e4b2bf.jpg" alt=""></div>
+
+<main class="frame">
+  <div class="lang" translate="no" role="group" aria-label="Bahasa / Language"><button type="button" data-l="id" aria-pressed="true" lang="id" aria-label="Bahasa Indonesia">ID</button><button type="button" data-l="en" aria-pressed="false" lang="en" aria-label="English">EN</button></div>
+  <img class="shot" src="/assets/img/0b81e4b2bf.jpg" alt="" fetchpriority="high">
+
+  <section class="intro">
+    <a href="#" class="logo">Sendang Duwur<small>Paciran, Lamongan</small></a>
+    <p class="kick" data-t="kick">Jejak sunan, warisan batik</p>
+    <p class="hero slogan" lang="en" translate="no">COME FOR THE VIBE,<br><em>STAY FOR THE CULTURE</em></p>
+    <p class="sm" data-t="intro">Masuk untuk menyimpan stempel Heritage Passport Anda di akun, dan membukanya dari perangkat mana pun.</p>
+  </section>
+
+  <section class="card" aria-labelledby="title">
+    <fieldset class="types" role="radiogroup" aria-labelledby="types-l">
+      <legend id="types-l" data-t="typesLabel">Jenis akun</legend>
+      <button type="button" class="ty" role="radio" data-type="user" aria-checked="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 15-5 16 0"/></svg>
+        <b data-t="tUser">Pengunjung / Warga</b><small data-t="tUserS">Wisata & layanan desa</small></button>
+      <button type="button" class="ty" role="radio" data-type="umkm" aria-checked="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M10 20v-6h4v6"/></svg>
+        <b data-t="tUmkm">Pelaku UMKM</b><small data-t="tUmkmS">Kelola usaha</small></button>
+      <button type="button" class="ty" role="radio" data-type="admin" aria-checked="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <b data-t="tAdmin">Admin Desa</b><small data-t="tAdminS">Pengelola situs</small></button>
+    </fieldset>
+    <h1 id="title">Masuk ke akun Anda</h1>
+    <p class="sub" id="sub">Gunakan email dan kata sandi yang Anda daftarkan.</p>
+
+    <form id="form" novalidate>
+      <div class="alert" id="alert" role="alert" hidden></div>
+
+      <div class="field" data-only="register" hidden>
+        <label for="name" data-t="lblName">Nama lengkap</label>
+        <input id="name" name="name" type="text" autocomplete="name" maxlength="60" placeholder="Nama lengkap Anda" data-tp="phName" aria-describedby="err-name">
+        <p class="err" id="err-name" hidden></p>
+      </div>
+
+      <div class="note" id="tnote" hidden></div>
+
+      <div class="field">
+        <label for="email" data-t="lblEmail">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" autocapitalize="none" spellcheck="false" placeholder="Masukkan email Anda" data-tp="phEmail" aria-describedby="err-email">
+        <p class="err" id="err-email" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="password" data-t="lblPw">Kata sandi</label>
+        <div class="pw">
+          <input id="password" name="password" type="password" autocomplete="current-password" maxlength="128" placeholder="Masukkan kata sandi" data-tp="phPw" aria-describedby="hint-password err-password">
+          <button type="button" id="toggle" aria-controls="password" aria-pressed="false">Tampilkan</button>
+        </div>
+        <p class="hint" id="hint-password" data-only="register" data-t="hintPw" hidden>Minimal 8 karakter.</p>
+        <p class="err" id="err-password" hidden></p>
+      </div>
+
+      <div class="field" data-only="register" data-type="user" hidden>
+        <label for="asal" data-t="lblAsal">Saya adalah</label>
+        <select id="asal" name="asal"><option value="pengunjung" data-t="optVis">Pengunjung / wisatawan</option><option value="warga" data-t="optRes">Warga Desa Sendang Duwur</option></select>
+      </div>
+      <div class="field" data-only="register" data-type="umkm" hidden>
+        <label for="namaUsaha" data-t="lblBiz">Nama usaha</label>
+        <input id="namaUsaha" name="namaUsaha" type="text" maxlength="100" placeholder="Contoh: Batik Tulis Sendang" data-tp="phBiz" aria-describedby="err-namaUsaha">
+        <p class="err" id="err-namaUsaha" hidden></p>
+      </div>
+      <div class="field" data-only="register" data-type="umkm" hidden>
+        <label for="kategori" data-t="lblCat">Kategori usaha</label>
+        <select id="kategori" name="kategori" aria-describedby="err-kategori"><option value="Batik">Batik</option><option value="Bordir & sablon">Bordir &amp; sablon</option><option value="Kuliner & toko">Kuliner &amp; toko</option></select>
+        <p class="err" id="err-kategori" hidden></p>
+      </div>
+      <div class="field" data-only="register" data-type="umkm" hidden>
+        <label for="whatsapp" data-t="lblWa">Nomor WhatsApp usaha</label>
+        <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" maxlength="20" placeholder="0857-xxxx-xxxx" aria-describedby="err-whatsapp">
+        <p class="err" id="err-whatsapp" hidden></p>
+      </div>
+
+      <div class="row" data-only="login">
+        <label class="check"><input type="checkbox" id="remember" name="remember"><span data-t="remember">Ingat saya 30 hari</span></label>
+        <button type="button" class="forgot" id="forgot" data-t="forgot">Lupa kata sandi?</button>
+      </div>
+
+      <button type="submit" class="submit" id="submit">Masuk</button>
+    </form>
+
+    <div class="or" id="orRow"><span data-t="or">atau</span></div>
+
+    <a class="google" id="google" href="/api/auth/google">
+      <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.5-4.1 7-10.2 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+      <span id="gtxt" data-t="google">Masuk dengan Google</span>
+    </a>
+
+    <p class="switch"><span id="switch-text">Baru di sini?</span> <button type="button" id="switch-btn">Buat akun</button></p>
+  </section>
+</main>
+
+<div class="welcome" id="welcome" role="status" hidden>
+  <h2><span data-t="welcome">Selamat datang,</span> <span id="wname"></span></h2>
+  <p class="go" id="wgo" data-t="wgo">Membuka Sendang Duwur…</p>
+</div>
+
+<script>(() => {
+  const $ = (s) => document.querySelector(s);
+  const form = $('#form');
+  const alertBox = $('#alert');
+  const submitBtn = $('#submit');
+  const fields = { name: $('#name'), email: $('#email'), password: $('#password'), namaUsaha: $('#namaUsaha'), kategori: $('#kategori'), whatsapp: $('#whatsapp') };
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+
+  /* ---------- bahasa (ID / EN), disimpan di sd_lang agar sama dengan situs utama ---------- */
+  const I = {
+    id: {
+      kick: 'Jejak sunan, warisan batik',
+      intro: 'Masuk untuk menyimpan stempel Heritage Passport Anda di akun, dan membukanya dari perangkat mana pun.',
+      lblName: 'Nama lengkap', lblEmail: 'Email', lblPw: 'Kata sandi',
+      phName: 'Nama lengkap Anda', phEmail: 'Masukkan email Anda', phPw: 'Masukkan kata sandi',
+      hintPw: 'Minimal 8 karakter.', remember: 'Ingat saya 30 hari', forgot: 'Lupa kata sandi?',
+      or: 'atau', google: 'Masuk dengan Google', show: 'Tampilkan', hide: 'Sembunyikan', busy: 'Memproses…',
+      errName: 'Nama minimal 2 karakter.', errEmail: 'Masukkan alamat email yang valid.',
+      errPwMin: 'Kata sandi minimal 8 karakter.', errPwReq: 'Masukkan kata sandi Anda.',
+      welcome: 'Selamat datang,', wgo: 'Membuka Sendang Duwur…', 
+      forgotMsg: 'Reset kata sandi lewat email belum tersedia. Hubungi admin desa lewat WhatsApp 0851-7159-1926 agar kata sandi Anda diatur ulang.',
+      netErr: 'Tidak dapat terhubung ke server. Periksa koneksi Anda lalu coba lagi.', generic: 'Terjadi kesalahan. Coba lagi.',
+      google_off: 'Login Google belum diaktifkan oleh pengelola situs.', google_denied: 'Login Google dibatalkan.', google_failed: 'Login Google gagal. Coba lagi.',
+      login: { title: 'Masuk ke akun Anda', sub: 'Gunakan email dan kata sandi yang Anda daftarkan.', submit: 'Masuk', switchText: 'Baru di sini?', switchBtn: 'Buat akun', pageTitle: 'Masuk – Visit Sendang Duwur', autocomplete: 'current-password' },
+      register: { title: 'Buat akun pengunjung', sub: 'Simpan stempel Heritage Passport Anda di akun, bisa dibuka dari perangkat mana pun.', submit: 'Buat akun', switchText: 'Sudah punya akun?', switchBtn: 'Masuk', pageTitle: 'Daftar – Visit Sendang Duwur', autocomplete: 'new-password' },
+    },
+    en: {
+      kick: 'Footsteps of the sunan, heritage of batik',
+      intro: 'Sign in to save your Heritage Passport stamps to your account and open them from any device.',
+      lblName: 'Full name', lblEmail: 'Email', lblPw: 'Password',
+      phName: 'Your full name', phEmail: 'Enter your email', phPw: 'Your password',
+      hintPw: 'At least 8 characters.', remember: 'Remember me for 30 days', forgot: 'Forgot password?',
+      or: 'or', google: 'Sign in with Google', show: 'Show', hide: 'Hide', busy: 'Processing…',
+      errName: 'Name must be at least 2 characters.', errEmail: 'Enter a valid email address.',
+      errPwMin: 'Password must be at least 8 characters.', errPwReq: 'Enter your password.',
+      welcome: 'Welcome,', wgo: 'Opening Sendang Duwur…', 
+      forgotMsg: 'Password reset by email is not available yet. Contact the village admin on WhatsApp 0851-7159-1926 to have your password reset.',
+      netErr: 'Could not reach the server. Check your connection and try again.', generic: 'Something went wrong. Please try again.',
+      google_off: 'Google sign-in has not been enabled by the site administrator.', google_denied: 'Google sign-in was cancelled.', google_failed: 'Google sign-in failed. Please try again.',
+      login: { title: 'Sign in to your account', sub: 'Use the email and password you registered with.', submit: 'Sign in', switchText: 'New here?', switchBtn: 'Create account', pageTitle: 'Sign in – Visit Sendang Duwur', autocomplete: 'current-password' },
+      register: { title: 'Create a visitor account', sub: 'Save your Heritage Passport stamps to your account and open them from any device.', submit: 'Create account', switchText: 'Already have an account?', switchBtn: 'Sign in', pageTitle: 'Sign up – Visit Sendang Duwur', autocomplete: 'new-password' },
+    },
+  };
+  Object.assign(I.id, {
+    typesLabel: 'Jenis akun', tUser: 'Pengunjung / Warga', tUserS: 'Wisata & layanan desa', tUmkm: 'Pelaku UMKM', tUmkmS: 'Kelola usaha', tAdmin: 'Admin Desa', tAdminS: 'Pengelola situs',
+    lblAsal: 'Saya adalah', optVis: 'Pengunjung / wisatawan', optRes: 'Warga Desa Sendang Duwur',
+    googleOffBtn: 'Login Google belum dikonfigurasi',
+    googleOff: 'Login Google belum dikonfigurasi di server ini. Pengelola perlu mengisi GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET (lihat GOOGLE_SETUP.md). Sementara itu, masuk dengan email dan kata sandi.',
+    google_wrongtype: 'Akun Google ini sudah terdaftar dengan jenis akun lain. Pilih jenis akun yang sesuai di atas.', google_noadmin: 'Akun admin tidak bisa dibuat lewat Google. Gunakan akun admin yang diberikan pengelola.', google_inactive: 'Akun ini dinonaktifkan. Hubungi admin desa.',
+    lblBiz: 'Nama usaha', phBiz: 'Contoh: Batik Tulis Sendang', lblCat: 'Kategori usaha', lblWa: 'Nomor WhatsApp usaha',
+    errBiz: 'Tulis nama usaha Anda.', errWa: 'Nomor WhatsApp harus angka (8–20 digit).',
+  });
+  Object.assign(I.en, {
+    typesLabel: 'Account type', tUser: 'Visitor / Resident', tUserS: 'Tourism & village services', tUmkm: 'Business owner', tUmkmS: 'Manage your shop', tAdmin: 'Village Admin', tAdminS: 'Site administrator',
+    lblAsal: 'I am a', optVis: 'Visitor / tourist', optRes: 'Resident of Sendang Duwur',
+    googleOffBtn: 'Google sign-in not configured',
+    googleOff: 'Google sign-in is not configured on this server. The administrator must set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (see GOOGLE_SETUP.md). Meanwhile, sign in with email and password.',
+    google_wrongtype: 'This Google account is registered with a different account type. Pick the matching type above.', google_noadmin: 'Admin accounts cannot be created through Google. Use the admin account you were given.', google_inactive: 'This account is deactivated. Contact the village admin.',
+    lblBiz: 'Business name', phBiz: 'e.g. Batik Tulis Sendang', lblCat: 'Business category', lblWa: 'Business WhatsApp number',
+    errBiz: 'Enter your business name.', errWa: 'WhatsApp number must be digits (8–20).',
+  });
+  const TCOPY = {
+    id: {
+      user:  { login: ['Masuk sebagai pengunjung / warga', 'Simpan stempel Heritage Passport, itinerary, dan kirim laporan dengan akun Anda.'], register: ['Buat akun pengunjung / warga', 'Satu akun untuk pengunjung wisata maupun warga Desa Sendang Duwur.'], note: '' },
+      umkm:  { login: ['Masuk ke dashboard UMKM', 'Kelola profil usaha dan pantau pesanan yang masuk.'], register: ['Daftarkan usaha Anda', 'Isi data usaha. Setelah mendaftar, admin desa memverifikasi usaha Anda sebelum tampil di marketplace.'], note: 'Usaha baru berstatus “menunggu verifikasi” dan belum tampil di marketplace sampai disetujui admin desa.' },
+      admin: { login: ['Masuk sebagai admin desa', 'Khusus pengelola situs. Gunakan akun admin yang diberikan.'], register: ['', ''], note: 'Akun admin tidak bisa dibuat lewat pendaftaran. Hubungi pengelola situs bila Anda perlu akses.' },
+      side: { user: ['Jejak sunan, warisan batik', 'Masuk untuk menyimpan stempel Heritage Passport, itinerary, dan mengirim laporan dari perangkat mana pun.'], umkm: ['Usaha warga, pasar yang lebih luas', 'Daftarkan usaha batik, bordir, atau kulinermu. Terima pesanan dari pengunjung langsung di dashboard.'], admin: ['Pusat pengelolaan', 'Verifikasi usaha warga, pantau pesanan dan laporan, serta kelola konten situs.'] },
+      wrong: 'Akun ini terdaftar sebagai {t}. Kami sudah memilihkan jenis akun yang sesuai, silakan masuk lagi.',
+      names: { user: 'Pengunjung / Warga', umkm: 'Pelaku UMKM', admin: 'Admin Desa' },
+    },
+    en: {
+      user:  { login: ['Sign in as visitor / resident', 'Save your Heritage Passport stamps, itinerary, and send reports with your account.'], register: ['Create a visitor / resident account', 'One account for tourists and residents of Sendang Duwur village.'], note: '' },
+      umkm:  { login: ['Sign in to the business dashboard', 'Manage your business profile and track incoming orders.'], register: ['Register your business', 'Fill in your business details. The village admin verifies it before it appears in the marketplace.'], note: 'New businesses start as “pending verification” and stay hidden from the marketplace until the village admin approves them.' },
+      admin: { login: ['Sign in as village admin', 'Site administrators only. Use the admin account you were given.'], register: ['', ''], note: 'Admin accounts cannot be created by sign-up. Contact the site administrator if you need access.' },
+      side: { user: ['Footsteps of the sunan, heritage of batik', 'Sign in to save Heritage Passport stamps and itineraries, and send reports from any device.'], umkm: ['Village businesses, a wider market', 'Register your batik, embroidery, or food business and receive visitors’ orders on your dashboard.'], admin: ['Control center', 'Verify village businesses, track orders and reports, and manage site content.'] },
+      wrong: 'This account is registered as {t}. We selected the matching account type; please sign in again.',
+      names: { user: 'Visitor / Resident', umkm: 'Business owner', admin: 'Village Admin' },
+    },
+  };
+  const tc2 = () => TCOPY[lang];
+  let type = 'user', googleOn = null;
+  // Pesan dari server (berbahasa Indonesia) dialihkan ke bahasa yang dipilih.
+  const SERVER_EN = {
+    'Email atau kata sandi salah.': 'Incorrect email or password.',
+    'Email ini sudah terdaftar.': 'This email is already registered.',
+    'Email ini sudah terdaftar. Silakan masuk.': 'This email is already registered. Please sign in.',
+    'Terlalu banyak percobaan. Coba lagi beberapa menit lagi.': 'Too many attempts. Please try again in a few minutes.',
+  };
+  let lang = 'id';
+  try { const q = new URLSearchParams(location.search).get('lang'); lang = (q || localStorage.getItem('sd_lang')) === 'en' ? 'en' : 'id'; } catch (e) {}
+  const t = (k) => I[lang][k];
+  const srv = (m) => (lang === 'en' && SERVER_EN[m]) || m;
+  window.sdT = t;
+  const GOOGLE_ERR = { google_off: 'google_off', google_denied: 'google_denied', google_failed: 'google_failed', google_wrongtype: 'google_wrongtype', google_noadmin: 'google_noadmin', google_inactive: 'google_inactive' };
+  let COPY = I[lang];
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  let mode = 'login';
+  let busy = false;
+
+  // Tujuan setelah masuk: hanya jalur di situs ini ("/..." tetapi bukan "//..." atau "/\...").
+  function nextUrl() {
+    const n = new URLSearchParams(location.search).get('next');
+    return n && /^\/(?![/\\])/.test(n) ? n : '/';
+  }
+
+  /* ---------- tampilan ---------- */
+  function clearErrors() {
+    alertBox.hidden = true;
+    alertBox.textContent = '';
+    for (const key of Object.keys(fields)) {
+      fields[key].removeAttribute('aria-invalid');
+      const e = $('#err-' + key);
+      e.hidden = true;
+      e.textContent = '';
+    }
+  }
+
+  function fieldError(key, message) {
+    fields[key].setAttribute('aria-invalid', 'true');
+    const e = $('#err-' + key);
+    e.textContent = message;
+    e.hidden = false;
+  }
+
+  function focusFirstInvalid() {
+    const el = form.querySelector('[aria-invalid="true"]');
+    if (el) el.focus();
+  }
+
+  function setMode(next, { animate = true, updateHash = true } = {}) {
+    mode = next;
+    const c = I[lang][mode];
+    const isReg = mode === 'register';
+
+    tabs.forEach((t) => {
+      const on = t.dataset.mode === mode;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on) form.setAttribute('aria-labelledby', t.id);
+    });
+
+    if (type === 'admin' && mode === 'register') { mode = 'login'; return setMode('login', { animate, updateHash }); }
+    const tc = TCOPY[lang][type];
+    $('#title').textContent = tc[mode][0];
+    $('#sub').textContent = tc[mode][1];
+    const nt = $('#tnote'); nt.textContent = tc.note; nt.hidden = !tc.note;
+    document.querySelectorAll('.ty').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.type === type)));
+    $('.kick').textContent = tc2().side[type][0];
+    $('.sm').textContent = tc2().side[type][1];
+    $('#google').href = '/api/auth/google?as=' + type + '&next=' + encodeURIComponent(nextUrl());
+    $('#gtxt').textContent = t(googleOn === false ? 'googleOffBtn' : 'google');
+    $('.switch').hidden = type === 'admin';
+    submitBtn.textContent = c.submit;
+    $('#switch-text').textContent = c.switchText;
+    $('#switch-btn').textContent = c.switchBtn;
+    document.title = c.pageTitle;
+    fields.password.autocomplete = c.autocomplete;
+
+    form.querySelectorAll('[data-only]').forEach((el) => {
+      el.hidden = el.dataset.only !== mode || (!!el.dataset.type && el.dataset.type !== type);
+    });
+
+    // Sembunyikan lagi kata sandi saat berpindah mode.
+    fields.password.type = 'password';
+    $('#toggle').textContent = t('show');
+    $('#toggle').setAttribute('aria-pressed', 'false');
+
+    clearErrors();
+
+    if (updateHash) {
+      try { history.replaceState(null, '', location.pathname + location.search + (isReg ? '#daftar' : '')); } catch (e) {}
+    }
+    if (animate) {
+      for (const el of [$('#title'), $('#sub'), form]) {
+        el.classList.remove('swap');
+        void el.offsetWidth; // mulai ulang animasi
+        el.classList.add('swap');
+      }
+    }
+  }
+
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => setMode(t.dataset.mode));
+    t.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      const other = tabs[(i + 1) % tabs.length];
+      setMode(other.dataset.mode);
+      other.focus();
+    });
+  });
+
+  function setType(next) {
+    if (type === next) return;
+    type = next;
+    try { history.replaceState(null, '', (type === 'umkm' ? '/login/umkm' : type === 'admin' ? '/login/admin' : '/login') + location.search + location.hash); } catch (e) {}
+    setMode(mode, { animate: true, updateHash: false });
+  }
+  const tyBtns = [...document.querySelectorAll('.ty')];
+  tyBtns.forEach((b, i) => {
+    b.addEventListener('click', () => setType(b.dataset.type));
+    b.addEventListener('keydown', (e) => {
+      if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) return;
+      e.preventDefault();
+      const o = tyBtns[(i + (e.key === 'ArrowRight' ? 1 : tyBtns.length - 1)) % tyBtns.length];
+      setType(o.dataset.type); o.focus();
+    });
+  });
+
+  $('#switch-btn').addEventListener('click', () => {
+    setMode(mode === 'login' ? 'register' : 'login');
+    (mode === 'register' ? fields.name : fields.email).focus();
+  });
+
+  $('#toggle').addEventListener('click', () => {
+    const show = fields.password.type === 'password';
+    fields.password.type = show ? 'text' : 'password';
+    $('#toggle').textContent = show ? t('hide') : t('show');
+    $('#toggle').setAttribute('aria-pressed', String(show));
+  });
+
+  /* ---------- kirim ---------- */
+  function validate() {
+    const errors = {};
+    if (mode === 'register' && fields.name.value.replace(/\s+/g, ' ').trim().length < 2) {
+      errors.name = t('errName');
+    }
+    if (!EMAIL_RE.test(fields.email.value.trim())) {
+      errors.email = t('errEmail');
+    }
+    if (mode === 'register' && type === 'umkm') {
+      if (fields.namaUsaha.value.replace(/\s+/g, ' ').trim().length < 2) errors.namaUsaha = t('errBiz');
+      if (!/^[0-9+\-\s]{8,20}$/.test(fields.whatsapp.value.trim())) errors.whatsapp = t('errWa');
+    }
+    const pw = fields.password.value;
+    if (mode === 'register' && pw.length < 8) errors.password = t('errPwMin');
+    if (mode === 'login' && !pw) errors.password = t('errPwReq');
+    return errors;
+  }
+
+  function setBusy(on) {
+    busy = on;
+    submitBtn.disabled = on;
+    submitBtn.textContent = on ? t('busy') : I[lang][mode].submit;
+  }
+
+  async function post(path, payload) {
+    const res = await fetch(path, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    let data = {};
+    try { data = await res.json(); } catch { /* respons bukan JSON */ }
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    clearErrors();
+
+    const errors = validate();
+    for (const [k, msg] of Object.entries(errors)) fieldError(k, msg);
+    if (Object.keys(errors).length) return focusFirstInvalid();
+
+    const payload = { email: fields.email.value.trim(), password: fields.password.value, accountType: type };
+    if (mode === 'register') {
+      payload.name = fields.name.value;
+      if (type === 'user') payload.asal = $('#asal').value;
+      if (type === 'umkm') Object.assign(payload, { namaUsaha: fields.namaUsaha.value, kategori: fields.kategori.value, whatsapp: fields.whatsapp.value });
+    }
+    else payload.remember = $('#remember').checked;
+
+    setBusy(true);
+    try {
+      const r = await post(mode === 'register' ? '/api/auth/register' : '/api/auth/login', payload);
+      if (r.ok) {
+        const u = r.data.user || {};
+        $('#wname').textContent = String(u.name || '').split(' ')[0];
+        $('#welcome').hidden = false;
+        $('#wgo').textContent = t('wgo');
+        const hasNext = new URLSearchParams(location.search).has('next');
+        setTimeout(() => location.replace(hasNext ? nextUrl() : u.role === 'admin' ? '/admin' : u.role === 'umkm' ? '/umkm' : '/'), 900);
+        return;
+      }
+      if (r.data.fields) {
+        for (const [k, msg] of Object.entries(r.data.fields)) if (fields[k]) fieldError(k, srv(msg));
+        focusFirstInvalid();
+      } else if (r.data.wrongType && TCOPY[lang][r.data.wrongType]) {
+        type = r.data.wrongType;
+        setMode('login', { animate: false, updateHash: false });
+        alertBox.textContent = TCOPY[lang].wrong.replace('{t}', TCOPY[lang].names[type]);
+        alertBox.hidden = false;
+      } else {
+        alertBox.textContent = srv(r.data.error) || t('generic');
+        alertBox.hidden = false;
+        if (r.status === 401) { fields.password.focus(); fields.password.select(); }
+      }
+    } catch {
+      alertBox.textContent = t('netErr');
+      alertBox.hidden = false;
+    }
+    setBusy(false);
+  });
+
+  /* ---------- awal ---------- */
+  function applyLang(save) {
+    if (save) { try { localStorage.setItem('sd_lang', lang); } catch (e) {} }
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll('[data-tp]').forEach((el) => { el.placeholder = t(el.dataset.tp); });
+    document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.l === lang)));
+    COPY = I[lang];
+    const ge = GOOGLE_ERR[new URLSearchParams(location.search).get('error')];
+    setMode(mode, { animate: false, updateHash: false });
+    if (ge) { alertBox.textContent = t(ge); alertBox.hidden = false; }
+  }
+  document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.l === lang) return;
+    lang = b.dataset.l;
+    applyLang(true);
+  }));
+
+  try { const a = new URLSearchParams(location.search).get('as'); const pth = location.pathname.replace(/\/$/, ''); type = pth === '/login/umkm' ? 'umkm' : pth === '/login/admin' ? 'admin' : ['user', 'umkm', 'admin'].includes(a) ? a : 'user'; } catch (e) {}
+  mode = location.hash === '#daftar' ? 'register' : 'login';
+  applyLang(false);
+
+  // Tombol Google membawa tujuan akhir; galat dari Google muncul di sini.
+  $('#google').href = '/api/auth/google?as=' + type + '&next=' + encodeURIComponent(nextUrl());
+  // Cek apakah server sudah dikonfigurasi untuk Google; bila belum, tampilkan status jelas (bukan simulasi).
+  fetch('/api/config').then((r) => r.json()).then((c) => {
+    googleOn = !!c.google;
+    if (!googleOn) {
+      const g = $('#google');
+      g.setAttribute('aria-disabled', 'true'); g.style.opacity = '.6'; g.removeAttribute('href');
+      g.addEventListener('click', (e) => { e.preventDefault(); alertBox.textContent = t('googleOff'); alertBox.hidden = false; });
+      $('#gtxt').textContent = t('googleOffBtn');
+    }
+  }).catch(() => {});
+  $('#forgot').addEventListener('click', () => {
+    alertBox.textContent = t('forgotMsg');
+    alertBox.hidden = false;
+  });
+  const geKey = GOOGLE_ERR[new URLSearchParams(location.search).get('error')];
+  if (geKey) { alertBox.textContent = t(geKey); alertBox.hidden = false; }
+
+  // Bila sudah masuk, langsung arahkan ke tujuan.
+  fetch('/api/auth/me', { credentials: 'same-origin' })
+    .then((r) => r.json())
+    .then((d) => { if (d && d.user) location.replace(new URLSearchParams(location.search).has('next') ? nextUrl() : d.user.role === 'admin' ? '/admin' : d.user.role === 'umkm' ? '/umkm' : '/'); })
+    .catch(() => {});
+})();
+</script>
+</body>
+</html>

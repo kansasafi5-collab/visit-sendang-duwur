@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Dashboard UMKM – Visit Sendang Duwur</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf7f1;--sf:#fff;--tx:#1b231f;--mt:#5d655f;--ln:#e3dccd;--ac:#9b2d20;--gd:#d9a000;--ink:#0f2a21;--ok:#2f6b4f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1512;--sf:#17201b;--tx:#ece7db;--mt:#a4aca5;--ln:#2a352e;--ac:#e38275;--ok:#7fc3a0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1512;--sf:#17201b;--tx:#ece7db;--mt:#a4aca5;--ln:#2a352e;--ac:#e38275;--ok:#7fc3a0;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.55 'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;margin:0;letter-spacing:-.01em;line-height:1.1}
+p{margin:0}button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gd);outline-offset:2px}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100svh}
+aside{background:linear-gradient(180deg,rgba(15,42,33,.15),var(--ink) 220px),var(--b-i11) 50% 0/100% 220px no-repeat,var(--ink);color:#e5ece6;padding:28px 18px 22px;position:sticky;top:0;height:100svh;display:flex;flex-direction:column;gap:30px}
+.logo{font:600 26px/1 Fraunces,Georgia,serif;color:#fff;padding:70px 10px 0;text-shadow:0 2px 14px rgba(0,0,0,.5)}.logo small{display:block;margin-top:7px;font:400 13px 'DM Sans',sans-serif;opacity:.75}
+nav{display:flex;flex-direction:column;gap:2px}
+nav a{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:6px;color:#c5d0c6;text-decoration:none;font-weight:500}
+nav a:hover{background:rgba(255,255,255,.07)}nav a[aria-current]{background:rgba(255,255,255,.11);color:#fff;box-shadow:inset 3px 0 0 var(--gd)}
+nav em{font-style:normal;font-size:12px;font-weight:700;background:var(--gd);color:#151515;border-radius:99px;padding:1px 8px}
+.me{margin-top:auto;padding:14px 10px 0;border-top:1px solid #26382e;font-size:13px;color:#9fb0a2}.me b{display:block;color:#fff;font-size:14px}
+main{min-width:0}.pg{padding:34px clamp(20px,4vw,56px) 90px;max-width:1120px}
+.hd{min-height:clamp(240px,32vw,340px);display:flex;align-items:flex-end;color:#fff;background:linear-gradient(90deg,rgba(8,14,10,.74),rgba(8,14,10,.18) 72%),linear-gradient(180deg,rgba(8,14,10,.08) 35%,rgba(8,14,10,.72)),var(--img) var(--pos,50% 45%)/cover no-repeat,#16231c}
+.hd .top{width:100%;max-width:1120px;margin:0;padding:90px clamp(20px,4vw,56px) 30px}.hd h1{color:#fff;text-shadow:0 2px 26px rgba(0,0,0,.4)}.hd .sub{color:#e6eee8}
+.hd .b:not(.p){background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);color:#fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.th{width:92px;height:68px;flex:none;border-radius:4px;background:var(--img) 50% 30%/cover no-repeat,var(--ln)}.th.sm{width:58px;height:58px}.who{display:flex;gap:14px;align-items:center}.tx{flex:1;min-width:0}.ls .rp{gap:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+h1{font-size:clamp(32px,4.4vw,46px)}.sub{color:var(--mt);margin-top:8px;max-width:56ch}
+h2{font-size:23px;margin:38px 0 4px}
+.b{border:1px solid var(--ln);background:var(--sf);padding:9px 16px;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block}
+.b:hover{border-color:var(--ac);color:var(--ac)}.b.p{background:var(--ac);border-color:var(--ac);color:#fff}.b.p:hover{filter:brightness(1.12);color:#fff}.b.g{border-color:transparent;background:none;color:var(--mt);padding:9px 10px}
+.legi{background:linear-gradient(180deg,rgba(15,42,33,.7),rgba(15,42,33,.95)),var(--b-i13) 50% 40%/cover,var(--ink);color:#fff;padding:34px 32px 0;display:grid;gap:6px;border-radius:4px}
+.legi p{color:#c5d0c6;font-size:15px}.legi .big{font:600 clamp(34px,5.4vw,60px)/1.04 Fraunces,Georgia,serif;letter-spacing:-.02em;color:#fff}
+.strip{list-style:none;margin:26px -32px 0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(58px,1fr);overflow-x:auto;border-top:1px solid #26382e}
+.strip li{padding:12px 6px 14px;text-align:center;border-left:1px solid #26382e;display:grid;gap:1px}.strip li:first-child{border-left:0}
+.strip b{font:600 22px/1.1 Fraunces,serif}.strip span{font-size:12.5px;color:#c5d0c6}.strip small{font-size:11px;color:#8b9d8f}
+.strip .lg{background:var(--gd);color:#151515}.strip .lg span,.strip .lg small{color:#2a2100}.strip .now b{text-decoration:underline;text-decoration-color:var(--gd);text-underline-offset:5px}
+.fig{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:26px 0 0;border-top:1px solid var(--ln)}
+.fig div{padding:16px 14px 6px 0}.fig b{font:600 44px/1 Fraunces,serif;display:block}.fig span{font-size:14px;color:var(--mt)}
+.cols{display:grid;grid-template-columns:1.15fr 1fr;gap:44px}
+.ls{list-style:none;margin:12px 0 0;padding:0}.ls>li{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--ln)}
+.ls b{font-weight:700}.mt{color:var(--mt);font-size:14px}.ls p{color:var(--mt);font-size:15px;margin-top:2px}
+.bar{height:6px;background:var(--ln);width:120px;flex:none}.bar i{display:block;height:100%;background:var(--ok)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}.chips button{border:1px solid var(--ln);background:var(--sf);padding:7px 16px;border-radius:99px;font-size:14px;cursor:pointer}.chips button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sb{width:100%;max-width:340px;border:1px solid var(--ln);background:var(--sf);padding:10px 14px;border-radius:6px;outline:none}.sb:focus,select:focus,input:focus,textarea:focus{border-color:var(--ac)}
+.tw{overflow-x:auto;margin-top:14px}table{width:100%;border-collapse:collapse;min-width:640px}
+th{text-align:left;font-size:13px;font-weight:700;color:var(--mt);padding:8px 14px 8px 0;border-bottom:2px solid var(--ink)}td{padding:13px 14px 13px 0;border-bottom:1px solid var(--ln);vertical-align:top;font-size:15px}
+td b{display:block}.na{color:var(--ac);font-size:14px}.dim{opacity:.5}
+.rp select,td select{border:1px solid var(--ln);background:var(--sf);padding:7px 10px;border-radius:6px}
+.rp{align-items:flex-start!important}.rp .ctl{display:flex;gap:6px;align-items:center;flex:none}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ln);margin-right:7px}.dot.baru{background:var(--ac)}.dot.proses{background:var(--gd)}.dot.selesai,.dot.on{background:var(--ok)}
+.sw{width:42px;height:24px;border-radius:99px;border:0;background:var(--ln);position:relative;cursor:pointer;padding:0;transition:background .2s}.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.sw[aria-checked=true]{background:var(--ok)}.sw[aria-checked=true]::after{transform:translateX(18px)}
+.empty{padding:34px 0;color:var(--mt)}
+dialog{border:0;padding:0;width:calc(100% - 32px);max-width:460px;background:var(--sf);color:var(--tx);border-radius:8px;box-shadow:0 30px 80px rgba(0,0,0,.45)}dialog::backdrop{background:rgba(8,14,10,.7)}
+dialog form{padding:26px}dialog h3{font-size:26px;margin-bottom:6px}#ferr{color:var(--ac);font-size:14px;font-weight:600;margin-top:12px}dialog label{display:block;font-size:14px;font-weight:700;margin-top:14px}
+dialog input,dialog select,dialog textarea{display:block;width:100%;margin-top:6px;border:1px solid var(--ln);background:var(--bg);padding:11px 13px;border-radius:6px;outline:none;font-weight:400}dialog textarea{min-height:100px;resize:vertical}
+.acts{display:flex;gap:8px;margin-top:22px}
+#t{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:6px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:20}#t.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:860px){
+ .app{grid-template-columns:minmax(0,1fr)}aside{position:static;min-width:0;height:auto;padding:16px 14px 10px;gap:12px}.me{margin-top:0;padding:8px 10px 0;border-top:1px solid #26382e}
+ nav{flex-direction:row;overflow-x:auto;gap:4px}.logo{padding-top:34px}.rp{flex-wrap:wrap}.tx{flex:1 1 200px}nav a{white-space:nowrap;gap:8px}.cols{grid-template-columns:1fr;gap:0}.legi{padding:24px 20px 0}.strip{margin:22px -20px 0}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>:root{--b-i11:url(/assets/img/4809c26956.jpg);--b-n6:url(/assets/img/167f726830.jpg);--b-i2:url(/assets/img/bf3aa952f4.jpg);--b-i10:url(/assets/img/0bbd09fb0a.jpg);--b-i5:url(/assets/img/542df43e25.jpg);--b-n4:url(/assets/img/6b73911760.jpg);--b-i13:url(/assets/img/89781c2ae9.jpg);--s-i0:url(/assets/img/a89fc633c6.jpg);--s-i2:url(/assets/img/8c35916830.jpg);--s-i4:url(/assets/img/4ac64217c1.jpg);--s-i1:url(/assets/img/bfbd836d2b.jpg);--s-i5:url(/assets/img/9412f8e134.jpg);--s-i6:url(/assets/img/bd787d21c1.jpg);--s-i9:url(/assets/img/81b650bf11.jpg);--s-i10:url(/assets/img/68e5990a22.jpg);--s-i11:url(/assets/img/551783fa0b.jpg);--s-i13:url(/assets/img/577ea470e5.jpg);--s-i14:url(/assets/img/83472ed421.jpg);--s-i15:url(/assets/img/d1a11dd497.jpg);--s-i16:url(/assets/img/e97539282a.jpg);--s-n4:url(/assets/img/e6997a6b2b.jpg);--s-n5:url(/assets/img/7917e454cf.jpg);--s-n6:url(/assets/img/9bb66eeba0.jpg);}</style><style>
+.vs{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:0;border:1px solid var(--ln);background:var(--sf);border-radius:10px;overflow:hidden;margin-bottom:8px}
+.vs .tx{padding:22px 24px}.vs img{width:100%;height:100%;min-height:190px;object-fit:cover;display:block}
+.vs .il{position:relative}.vs .il span{position:absolute;right:10px;bottom:10px;font:700 9.5px 'DM Sans';letter-spacing:.12em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:3px 9px}
+.badge{display:inline-flex;align-items:center;gap:7px;font:700 12px 'DM Sans';letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:4px 12px}
+.badge.pending{background:#fff3cf;color:#6a4b00}.badge.verified{background:#dff3e7;color:#1d5a3c}.badge.rejected{background:#fbe0dc;color:#8a2217}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .badge.pending{background:#4a3a0d;color:#ffe08a}:root:not([data-theme="light"]) .badge.verified{background:#173a29;color:#9fdcb8}:root:not([data-theme="light"]) .badge.rejected{background:#4a1e19;color:#ffb4a8}}
+.frm{display:grid;gap:4px;max-width:520px}.frm label{font-size:14px;font-weight:700;margin-top:14px}.frm input,.frm select{border:1px solid var(--ln);background:var(--sf);padding:11px 13px;border-radius:6px;outline:none;width:100%}
+.fe{color:var(--ac);font-size:13.5px;font-weight:600}
+.emp{display:grid;justify-items:center;text-align:center;gap:10px;padding:34px 10px;border:1px dashed var(--ln);border-radius:10px;margin-top:14px}.emp svg{width:84px;height:84px;color:var(--mt)}
+@media(max-width:700px){.vs{grid-template-columns:1fr}.vs img{min-height:150px;max-height:170px}}
+
+.dot.siap{background:var(--gd)}.dot.batal{background:#9aa39c}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0 0}
+.tile{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px 16px}.tile b{font:600 38px/1 Fraunces,serif;display:block}.tile span{font-size:13.5px;color:var(--mt)}
+.tile.hot{border-color:var(--ac);box-shadow:inset 4px 0 0 var(--ac)}
+.chart{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:16px 18px;margin-top:14px}.chart svg{width:100%;max-width:520px;max-height:230px;height:auto;display:block;margin:0 auto}a.b{color:var(--tx)}a.b.p{color:#fff}
+.chart .bx{fill:var(--ok)}.chart .bx.t{fill:var(--ac)}.chart text{fill:var(--mt);font:12px 'DM Sans',sans-serif}.chart .v{fill:var(--tx);font-weight:700}
+.oc{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:16px 18px;margin-top:12px;display:grid;gap:10px}
+.oc.new{border-color:var(--ac);box-shadow:inset 4px 0 0 var(--ac)}
+.oc .hd2{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}.oc .it{font-size:16px}
+.oc .ac2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.warn{background:#fff3cf;color:#5b4200;border:1px solid #ecd48a;border-radius:8px;padding:12px 16px;margin-bottom:14px}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn{background:#3d3210;color:#ffe08a;border-color:#6a5a1d}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+ <div class="logo">Sendang Duwur<small>Dashboard UMKM</small></div>
+ <nav id="nav" aria-label="Menu UMKM"></nav>
+ <div class="me"><b id="meN">…</b><span id="meE"></span><br><button class="b" id="out" type="button" style="margin-top:10px;background:none;color:#e5ece6;border-color:#3a4f43">Keluar</button> <a class="b g" href="/" style="color:#9fb0a2">Lihat situs</a></div>
+</aside>
+<main id="m"></main>
+</div>
+<div id="t" role="status" aria-live="polite"></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ST={baru:'Menunggu konfirmasi',proses:'Diproses',siap:'Siap dikirim',selesai:'Selesai',batal:'Dibatalkan'};
+const NEXT={baru:['proses','Terima & proses'],proses:['siap','Tandai siap dikirim'],siap:['selesai','Tandai selesai']};
+const VS={pending:['Menunggu verifikasi','Admin desa sedang memeriksa data usaha Anda. Usaha belum tampil di marketplace sampai disetujui.'],verified:['Terverifikasi','Usaha Anda sudah tampil di UMKM Marketplace dan bisa menerima pesanan.'],rejected:['Ditolak','Perbaiki data usaha sesuai catatan admin di bawah. Setelah disimpan, usaha otomatis diajukan ulang.']};
+const iso=t=>String(t).replace(' ','T')+'Z';
+const fdt=t=>new Date(iso(t)).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const ILU=b=>{const n=b.nama.toLowerCase();if(b.kategori==='Batik')return b.id%2?'batik-tulis':'batik-kain';if(b.kategori==='Bordir & sablon')return /sablon/.test(n)?'sablon':'bordir';if(/jamu/.test(n))return 'jamu';if(/pasar|latar/.test(n))return 'pasar';if(/toko/.test(n))return 'toko';return 'warung'};
+async function api(path,opt){const o=Object.assign({credentials:'same-origin'},opt||{});if(o.body&&typeof o.body!=='string'){o.body=JSON.stringify(o.body);o.headers=Object.assign({'Content-Type':'application/json'},o.headers)}
+ const r=await fetch(path,o);let d={};try{d=await r.json()}catch(e){}
+ if(r.status===401){location.href='/login/umkm?next=/umkm';throw new Error('Sesi berakhir')}
+ if(!r.ok){const e=new Error(d.error||'Terjadi kesalahan. Coba lagi.');e.fields=d.fields;throw e}return d}
+let tt;const toast=s=>{const t=$('#t');t.textContent=s;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),3200)};
+const ZERO={total:0,baru:0,proses:0,siap:0,selesai:0,batal:0};
+let ME=null,D={business:null,orders:[],stats:ZERO,harian:[]},OF='semua';
+const BN={ringkasan:['n6','50% 62%'],pesanan:['i13','50% 45%'],profil:['i5','50% 50%']};
+const NAV=[['ringkasan','Ringkasan'],['pesanan','Pesanan'],['profil','Profil usaha']];
+function statusCard(){const b=D.business,v=VS[b.verifikasi];
+ return `<div class="vs"><div class="tx"><span class="badge ${b.verifikasi}">${v[0]}</span><h2 style="margin:12px 0 6px">${esc(b.nama)}</h2><p class="mt">${esc(b.kategori)} · pemilik ${esc(b.pemilik)}</p><p style="margin-top:10px">${v[1]}</p>${b.verifikasi==='rejected'&&b.catatan?`<p style="margin-top:10px"><b>Catatan admin:</b> ${esc(b.catatan)}</p>`:''}${b.verifikasi==='rejected'?'<a class="b p" href="#profil" style="margin-top:14px">Perbaiki data usaha</a>':''}</div><div class="il"><img src="/assets/ilus/${ILU(b)}.svg" alt="Ilustrasi usaha ${esc(b.kategori)}" loading="lazy"><span>Ilustrasi</span></div></div>`}
+const EMPTY='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>';
+function chart(h){const mx=Math.max(1,...h.map(x=>x.n)),W=420,H=150,bw=40,gap=(W-bw*7)/8,hari=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+ return `<div class="chart" role="img" aria-label="Pesanan 7 hari terakhir: ${h.map(x=>x.n).join(', ')}"><svg viewBox="0 0 ${W} ${H+34}">${h.map((x,i)=>{const bh=Math.round(x.n/mx*H*.8),X=gap+i*(bw+gap),Y=H-bh,d=new Date(x.d+'T00:00:00');return `<rect class="bx${i===6?' t':''}" x="${X}" y="${Y}" width="${bw}" height="${Math.max(bh,2)}" rx="4"/><text class="v" x="${X+bw/2}" y="${Y-6}" text-anchor="middle">${x.n}</text><text x="${X+bw/2}" y="${H+20}" text-anchor="middle">${hari[d.getDay()]}</text>`}).join('')}</svg></div>`}
+function orderCard(o){const nx=NEXT[o.status],msg=encodeURIComponent(`Halo ${o.pemesan}, saya dari ${D.business.nama}. Pesanan Anda #${o.id} (${o.pesanan}, ${o.jumlah}×) ${o.status==='baru'?'sudah kami terima.':'statusnya: '+ST[o.status]+'.'}`);
+ return `<div class="oc ${o.status==='baru'?'new':''}"><div class="hd2"><b>#${o.id} · ${esc(o.pemesan)}</b><span class="mt">${fdt(o.created_at)}</span></div>
+ <div class="it">${esc(o.pesanan)} <span class="mt">· ${o.jumlah}×</span></div>
+ <div class="ac2"><span><i class="dot ${o.status}"></i>${ST[o.status]}</span>${nx?`<button class="b p" data-o="${o.id}" data-s="${nx[0]}">${nx[1]}</button>`:''}${o.status==='baru'?`<button class="b g" data-o="${o.id}" data-s="batal">Tolak</button>`:''}${o.wa?`<a class="b" target="_blank" rel="noopener" href="https://wa.me/${o.wa}?text=${msg}">Hubungi pembeli</a>`:'<span class="mt">Pembeli tidak mencantumkan WhatsApp</span>'}</div></div>`}
+const V={
+ringkasan(){const b=D.business;if(!b)return `<div class="pg"><h1>Belum ada data usaha</h1><p class="sub">Akun ini belum terhubung ke usaha. Hubungi admin desa.</p></div>`;
+ const s=D.stats,last=D.orders.slice(0,4).map(orderCard).join('');
+ return `<div class="top"><div><h1>Halo, ${esc(ME.name.split(' ')[0])}</h1><p class="sub">Ringkasan usaha dan pesanan Anda.</p></div></div>
+ ${!b.whatsapp?'<div class="warn"><b>Lengkapi nomor WhatsApp usaha.</b> Admin tidak bisa menyetujui usaha tanpa nomor ini. <a href="#profil">Buka profil</a></div>':''}${statusCard()}
+ <div class="tiles"><div class="tile ${s.baru?'hot':''}"><b>${s.baru}</b><span>menunggu konfirmasi</span></div><div class="tile"><b>${s.proses}</b><span>diproses</span></div><div class="tile"><b>${s.siap}</b><span>siap dikirim</span></div><div class="tile"><b>${s.selesai}</b><span>selesai</span></div><div class="tile"><b>${s.total}</b><span>total pesanan</span></div></div>
+ <h2>Pesanan 7 hari terakhir</h2>${chart(D.harian)}
+ <h2>Pesanan terbaru</h2>${last||`<div class="emp">${EMPTY}<b>Belum ada pesanan</b><p class="mt">${b.verifikasi==='verified'?'Pesanan dari pembeli akan muncul di sini.':'Pesanan baru bisa masuk setelah usaha Anda diverifikasi admin.'}</p></div>`}${D.orders.length>4?'<p style="margin-top:12px"><a class="b g" href="#pesanan">Lihat semua pesanan</a></p>':''}`},
+pesanan(){const L=D.orders.filter(o=>OF==='semua'||o.status===OF);
+ const chips=`<div class="chips">${['semua',...Object.keys(ST)].map(k=>`<button type="button" data-f="${k}" aria-pressed="${k===OF}">${k==='semua'?'Semua':ST[k]} (${k==='semua'?D.orders.length:D.stats[k]})</button>`).join('')}</div>`;
+ return `<div class="top"><div><h1>Pesanan masuk</h1><p class="sub">Pesanan dari pembeli di Marketplace. Terima, proses, lalu tandai selesai. Gunakan “Hubungi pembeli” untuk konfirmasi lewat WhatsApp.</p></div></div>${chips}${L.length?L.map(orderCard).join(''):`<div class="emp">${EMPTY}<b>${D.orders.length?'Tidak ada pesanan dengan status ini':'Belum ada pesanan'}</b><p class="mt">Pesanan baru muncul di sini otomatis.</p></div>`}`},
+profil(){const b=D.business;if(!b)return '<div class="pg"><h1>Belum ada data usaha</h1></div>';
+ return `<div class="top"><div><h1>Profil usaha</h1><p class="sub">Data ini tampil di marketplace. Pemilik: ${esc(b.pemilik)}.</p></div></div>${statusCard()}
+ <form class="frm" id="pf" novalidate><label for="f-nama">Nama usaha</label><input id="f-nama" value="${esc(b.nama)}" maxlength="100"><span class="fe" id="e-nama"></span>
+ <label for="f-kat">Kategori</label><select id="f-kat">${['Batik','Bordir & sablon','Kuliner & toko'].map(k=>`<option ${k===b.kategori?'selected':''}>${esc(k)}</option>`).join('')}</select>
+ <label for="f-wa">Nomor WhatsApp</label><input id="f-wa" type="tel" value="${esc(b.whatsapp)}" maxlength="20" placeholder="0857-xxxx-xxxx"><span class="fe" id="e-whatsapp"></span>
+ <label for="f-al">Alamat</label><input id="f-al" value="${esc(b.alamat)}" maxlength="150">
+ <div class="acts"><button class="b p" type="submit">Simpan</button></div></form>`}
+};
+function curHash(){const h=location.hash.slice(1);return V[h]?h:'ringkasan'}
+function route(){const h=curHash();
+ $('#nav').innerHTML=NAV.map(n=>`<a href="#${n[0]}" ${n[0]===h?'aria-current="page"':''}>${n[1]}${n[0]==='pesanan'&&D.stats.baru?`<em>${D.stats.baru}</em>`:''}</a>`).join('');
+ const M=$('#m');M.innerHTML=V[h]();const t=$('.top',M);
+ if(t){const pg=document.createElement('div'),bn=document.createElement('header');pg.className='pg';bn.className='hd';bn.style.setProperty('--img','var(--b-'+BN[h][0]+')');bn.style.setProperty('--pos',BN[h][1]);while(M.firstChild)pg.appendChild(M.firstChild);bn.appendChild(t);M.append(bn,pg)}
+ document.title=(D.stats.baru?'('+D.stats.baru+') ':'')+NAV.find(n=>n[0]===h)[1]+' – UMKM Sendang Duwur'}
+async function reload(){D=await api('/api/umkm/me')}
+document.addEventListener('click',async e=>{
+ const f=e.target.closest('[data-f]');if(f){OF=f.dataset.f;return route()}
+ const b=e.target.closest('button[data-o]');if(!b)return;b.disabled=true;
+ try{await api('/api/umkm/orders/'+b.dataset.o,{method:'PATCH',body:{status:b.dataset.s}});await reload();toast('Status diubah: '+ST[b.dataset.s]);route()}catch(er){toast(er.message);b.disabled=false}});
+document.addEventListener('submit',async e=>{if(e.target.id!=='pf')return;e.preventDefault();['e-nama','e-whatsapp'].forEach(i=>$('#'+i).textContent='');
+ try{await api('/api/umkm/me',{method:'PUT',body:{nama:$('#f-nama').value,kategori:$('#f-kat').value,whatsapp:$('#f-wa').value,alamat:$('#f-al').value}});await reload();toast('Tersimpan');route()}
+ catch(er){if(er.fields){for(const k in er.fields){const x=$('#e-'+k);if(x)x.textContent=er.fields[k]}}else toast(er.message)}});
+addEventListener('hashchange',()=>{scrollTo(0,0);route()});
+$('#out').onclick=async()=>{try{await api('/api/auth/logout',{method:'POST'})}catch(e){}location.href='/login/umkm'};
+// Cek pesanan baru tiap 30 detik; formulir profil tidak ditimpa saat sedang diisi.
+setInterval(async()=>{if(document.hidden)return;try{const before=D.stats.baru;await reload();if(D.stats.baru>before)toast('Pesanan baru masuk!');if(curHash()!=='profil')route();else{$('#nav').innerHTML=NAV.map(n=>`<a href="#${n[0]}" ${n[0]===curHash()?'aria-current="page"':''}>${n[1]}${n[0]==='pesanan'&&D.stats.baru?`<em>${D.stats.baru}</em>`:''}</a>`).join('')}}catch(e){}},30000);
+(async()=>{try{ME=(await api('/api/auth/me')).user;if(!ME||ME.role!=='umkm'){location.href='/login/umkm?next=/umkm';return}
+ $('#meN').textContent=ME.name;$('#meE').textContent=ME.email;await reload();route()}catch(e){$('#m').innerHTML='<div class="pg"><h1>Tidak bisa memuat data</h1><p class="sub">'+esc(e.message)+'</p></div>'}})();
+</script>
+</body>
+</html>
