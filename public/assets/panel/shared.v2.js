@@ -39,7 +39,8 @@
     const t = toasts.appendChild(el('div', { class: 'toast' + (bad ? ' bad' : ''), text: msg }));
     setTimeout(() => t.remove(), 4500);
   };
-  SD.StatCard = ({ label, value, note }) => el('div', { class: 'card stat' }, el('div', { class: 'v', text: value }), el('div', { class: 'l', text: label }), note && el('div', { class: 'd', text: note }));
+  const ICONS = [[/produk aktif|total produk|^produk|inventaris|jenis/i, '📦'], [/menunggu|verifikasi|pending/i, '⏳'], [/pesanan/i, '🧾'], [/penjualan|omzet|pendapatan|rupiah/i, '💰'], [/menipis|habis|stok/i, '⚠️'], [/promo|diskon|voucher/i, '🏷️'], [/umkm|usaha|toko/i, '🏪'], [/pengguna|warga|akun/i, '👥'], [/unit|terjual/i, '🛍️'], [/rata/i, '📊']];
+  SD.StatCard = ({ label, value, note, icon }) => el('div', { class: 'card stat' }, el('span', { class: 'ico', 'aria-hidden': 'true', text: icon || (ICONS.find(([re]) => re.test(label)) || [0, '✦'])[1] }), el('div', { class: 'v', text: value }), el('div', { class: 'l', text: label }), note && el('div', { class: 'd', text: note }));
   SD.StatusBadge = (text, tone = 'mut') => el('span', { class: 'sb ' + tone, text });
   SD.EmptyState = ({ title, text, action }) => el('div', { class: 'empty' }, el('h3', { text: title }), text && el('p', { text }), action && el('button', { class: 'btn', onclick: action.onClick, text: action.label }));
   SD.ErrorState = (err, retry) => el('div', { class: 'empty', role: 'alert' }, el('h3', { text: 'Data belum dapat dimuat' }), el('p', { text: err.message }), retry && el('button', { class: 'btn o', onclick: retry, text: 'Coba lagi' }));
@@ -53,12 +54,15 @@
     const W = 520, H = 200, P = 28, max = Math.max(...data.map((d) => d.value)), bw = (W - P * 2) / data.length;
     const ns = 'http://www.w3.org/2000/svg', mk = (t, a) => { const n = document.createElementNS(ns, t); for (const k in a) n.setAttribute(k, a[k]); return n; };
     const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'bc', role: 'img', 'aria-label': 'Grafik batang: ' + data.map((d) => d.label + ' ' + fmt(d.value)).join(', ') });
+    const defs = mk('defs', {}), lg = mk('linearGradient', { id: 'gbar', x1: 0, y1: 0, x2: 0, y2: 1 });
+    [['0', '#d9a73a'], ['1', 'currentColor']].forEach(([o, c]) => lg.append(mk('stop', { offset: o, 'stop-color': c, style: c === 'currentColor' ? 'stop-color:var(--role)' : null })));
+    defs.append(lg); svg.append(defs);
     svg.append(mk('line', { x1: P, x2: W - P, y1: H - P, y2: H - P, class: 'gl' }));
     data.forEach((d, i) => {
-      const h = (d.value / max) * (H - P * 2), x = P + i * bw + bw * 0.15;
-      svg.append(mk('rect', { x, y: H - P - h, width: bw * 0.7, height: h, class: 'bar', rx: 2 }));
-      const t = mk('text', { x: x + bw * 0.35, y: H - 10, 'text-anchor': 'middle', class: 'ax' }); t.textContent = d.label; svg.append(t);
-      const v = mk('text', { x: x + bw * 0.35, y: H - P - h - 5, 'text-anchor': 'middle', class: 'ax' }); v.textContent = fmt(d.value); svg.append(v);
+      const h = (d.value / max) * (H - P * 2), w = Math.min(bw * 0.7, 56), x = P + i * bw + (bw - w) / 2;
+      svg.append(mk('rect', { x, y: H - P - h, width: w, height: h, class: 'bar', rx: 5 }));
+      const t = mk('text', { x: x + w / 2, y: H - 10, 'text-anchor': 'middle', class: 'ax' }); t.textContent = d.label; svg.append(t);
+      const v = mk('text', { x: x + w / 2, y: H - P - h - 5, 'text-anchor': 'middle', class: 'ax' }); v.textContent = fmt(d.value); svg.append(v);
     });
     return svg;
   };
@@ -135,13 +139,25 @@
     const title = el('span', { class: 'sr' }); const content = el('div', { class: 'pg', id: 'konten', tabindex: '-1' });
     const shell = el('div', { class: 'shell' });
     const toggle = () => (matchMedia('(max-width:860px)').matches ? shell.classList.toggle('open') : shell.classList.toggle('mini'));
-    const side = el('aside', { class: 'side' }, el('div', { class: 'brand' }, 'Sendang Duwur', el('small', { text: me.label })), nav,
-      el('div', { class: 'who' }, el('b', { text: me.business ? me.business.nama : me.user.name }), el('span', { text: me.user.email }), el('br'), el('span', { class: 'badge-role', text: me.badge }), el('br'),
-        el('a', { href: '/', style: 'color:#c5d0c6;font-size:12.5px', text: '← Situs publik' }), ' · ', el('a', { href: '#', style: 'color:#c5d0c6;font-size:12.5px', text: 'Keluar', onclick: async (e) => { e.preventDefault(); await fetch('/api/auth/logout', { method: 'POST' }); location.href = '/'; } })));
+    const ini = (me.user.name || '?').trim().charAt(0).toUpperCase();
+    const out = async (e) => { e.preventDefault(); await fetch('/api/auth/logout', { method: 'POST' }); location.href = '/'; };
+    const side = el('aside', { class: 'side' }, el('a', { class: 'brand', href: '/', 'aria-label': 'Visit Sendang Duwur, ke situs publik' }, el('img', { src: '/assets/logo.png', alt: 'Visit Sendang Duwur', width: 240, height: 172 }), el('img', { class: 'em', src: '/assets/favicon.png', alt: '' }), el('small', { text: me.label })), nav,
+      el('div', { class: 'who' }, el('span', { class: 'av', 'aria-hidden': 'true', text: ini }), el('b', { text: me.business ? me.business.nama : me.user.name }), el('span', { class: 'em2', text: me.user.email }),
+        el('div', { class: 'ln' }, el('span', { class: 'badge-role', text: me.badge }), el('a', { href: '/', text: 'Situs publik' }), el('a', { href: '#', text: 'Keluar', onclick: out }))));
     const top = el('header', { class: 'top' }, el('button', { class: 'ib', 'aria-label': 'Buka/tutup menu', onclick: toggle, text: '☰' }), el('span', { class: 'ctx', text: me.label }), el('div', { class: 'sp' }),
       el('input', { class: 'search', type: 'search', 'aria-label': 'Cari menu', placeholder: 'Cari menu…', oninput: (e) => { const q = e.target.value.toLowerCase(); nav.querySelectorAll('a').forEach((a) => (a.style.display = a.textContent.toLowerCase().includes(q) ? '' : 'none')); } }), title);
     shell.append(side, el('div', { class: 'scrim', onclick: toggle }), el('div', { class: 'main' }, top, content));
     root.replaceChildren(shell);
+
+    const jump = (k) => (e) => { e.preventDefault(); history.pushState(null, '', base + (k === 'ringkasan' ? '' : '/' + k)); go(k); };
+    const hero = () => {
+      const h = new Date().getHours(), sapa = h < 11 ? 'Selamat pagi' : h < 15 ? 'Selamat siang' : h < 18 ? 'Selamat sore' : 'Selamat malam';
+      const nm = (me.user.name || '').split(' ')[0], tg = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const act = role === 'umkm' ? [['produk', '＋ Tambah produk', 'g'], ['pesanan', 'Lihat pesanan'], ['promo', 'Buat promo'], ['laporan', 'Laporan penjualan']] : [['verifikasi', 'Verifikasi usaha', 'g'], ['produk', 'Persetujuan produk'], ['laporan', 'Laporan desa'], ['konten', 'Kelola pengumuman']];
+      return el('section', { class: 'hero' }, el('div', { class: 'k', text: tg }), el('h1', { text: sapa + ', ' + nm }),
+        el('p', { text: role === 'umkm' ? 'Kelola produk, pesanan, dan promo ' + (me.business ? me.business.nama : 'usaha Anda') + ' dari satu tempat.' : 'Pantau perkembangan UMKM, verifikasi usaha, dan kelola konten Desa Sendang Duwur.' }),
+        el('div', { class: 'qa' }, act.map(([k, t, c]) => el('a', { class: 'btn ' + (c || ''), href: base + '/' + k, onclick: jump(k), text: t }))));
+    };
 
     async function go(k) {
       const m = menu.find((x) => x[0] === k) || menu[0];
@@ -151,7 +167,7 @@
       const page = SD.pages[role][m[0]];
       try {
         const node = page ? await page({ me, role }) : SD.EmptyState({ title: m[1], text: 'Modul ini belum dibangun. Akan tersedia pada tahap pengerjaan berikutnya, dan tidak menampilkan data contoh.' });
-        content.replaceChildren(node);
+        content.replaceChildren(m[0] === 'ringkasan' ? hero() : '', node);
       } catch (e) { content.replaceChildren(SD.ErrorState(e, () => go(m[0]))); }
       content.focus({ preventScroll: true });
     }

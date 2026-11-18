@@ -11,6 +11,7 @@ const BADGE = { umkm: 'UMKM', admin: 'Admin Desa' };
 
 module.exports.mount = function mount(app, { db, auth, PUBLIC }) {
   migrate(db);
+  const extra = require('./extra'); extra.migrate(db);
 
   /* ---- API: akses selalu divalidasi di server dari role di database ---- */
   const api = express.Router();
@@ -26,11 +27,14 @@ module.exports.mount = function mount(app, { db, auth, PUBLIC }) {
   const audit = require('./audit')(db);
   api.use('/umkm/ai', auth.requireUmkm, require('./bi')(db));
   api.use('/umkm', auth.requireUmkm, require('./umkm')(db, audit));
+  api.use('/umkm', auth.requireUmkm, extra.umkmRouter(db, audit));
   api.use('/admin/ai', auth.requireAdmin, require('./village')(db));
   api.use('/admin', auth.requireAdmin, require('./admin')(db, audit));
+  api.use('/admin', auth.requireAdmin, extra.adminRouter(db, audit));
   // Tahap berikutnya:
   //   api.use('/admin', auth.requireAdmin, require('./admin'));
   api.use((_req, res) => res.status(404).json({ error: 'Tidak ditemukan.' }));
+  app.use('/api', extra.publicRouter(db));
   app.use('/api/panel', api);
   require('./checkout')(app, { db, auth });
   require('./assistant')(app, { db });

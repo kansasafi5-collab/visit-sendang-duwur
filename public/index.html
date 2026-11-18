@@ -690,5 +690,6 @@ function renderAcct(){['acw','acd'].forEach(id=>{const c=$('#'+id);c.textContent
 (async()=>{try{me=(await api('/api/auth/me')).user}catch(e){}renderAcct();if(!me)return;
  try{const r=await api('/api/passport');const extra=stamps.filter(i=>!r.stamps.includes(i));let all=r.stamps;if(extra.length)all=(await api('/api/passport/stamp',{method:'POST',body:{idx:extra}})).stamps;stamps=all;store.set('sd_stamps',JSON.stringify(stamps));ppr()}catch(e){}})();
 </script>
+<script src="/assets/pengumuman.js" defer></script>
 </body>
 </html>
