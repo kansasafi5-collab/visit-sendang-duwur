@@ -25,12 +25,12 @@
   const val = (root, id) => root.querySelector('#' + id).value;
 
   /* Kartu Pengaturan yang sama untuk kedua role: tampilan + ganti kata sandi */
-  const THEMES = [['auto', '🖥️', 'Ikuti perangkat'], ['light', '☀️', 'Terang'], ['dark', '🌙', 'Gelap']];
+  const THEMES = [['auto', 'Ikuti perangkat'], ['light', 'Terang'], ['dark', 'Gelap']];
   const applyTheme = (t) => { try { t === 'auto' ? localStorage.removeItem('sd_theme') : localStorage.setItem('sd_theme', t); } catch {} t === 'auto' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.setAttribute('data-theme', t); };
   const curTheme = () => { try { return localStorage.getItem('sd_theme') || 'auto'; } catch { return 'auto'; } };
   const themeCard = () => {
     const box = el('div', { class: 'seg', role: 'group', 'aria-label': 'Tema tampilan' });
-    const draw = () => { box.replaceChildren(...THEMES.map(([v, ic, t]) => el('button', { type: 'button', 'aria-pressed': String(curTheme() === v), text: ic + ' ' + t, onclick: () => { applyTheme(v); draw(); } }))); };
+    const draw = () => { box.replaceChildren(...THEMES.map(([v, t]) => el('button', { type: 'button', 'aria-pressed': String(curTheme() === v), text: t, onclick: () => { applyTheme(v); draw(); } }))); };
     draw();
     return el('div', { class: 'card' }, el('h3', { text: 'Tampilan' }), el('p', { text: 'Pilih tema terang atau gelap. Pilihan disimpan di perangkat ini.', style: 'color:var(--mt);margin-bottom:14px' }), box);
   };
@@ -71,7 +71,7 @@
       const d = await api('/umkm/inventory'), r = d.ringkas;
       box.replaceChildren(
         el('div', { class: 'grid' }, SD.StatCard({ label: 'Jenis produk', value: num(r.jenis) }), SD.StatCard({ label: 'Total unit di gudang', value: num(r.unit) }),
-          SD.StatCard({ label: 'Nilai persediaan', value: rp(r.nilai), note: 'Stok × harga jual', icon: '💰' }), SD.StatCard({ label: 'Stok menipis', value: num(r.menipis), note: r.habis + ' produk habis' })),
+          SD.StatCard({ label: 'Nilai persediaan', value: rp(r.nilai), note: 'Stok × harga jual' }), SD.StatCard({ label: 'Stok menipis', value: num(r.menipis), note: r.habis + ' produk habis' })),
         el('div', { class: 'row2' },
           SD.ChartCard('Kondisi stok', d.items.length ? el('div', {}, d.items.map((p) => {
             const pct = Math.min(100, Math.round((p.stok / Math.max(p.stok_min * 3, 1)) * 100)), low = p.stok <= p.stok_min;
@@ -93,10 +93,10 @@
     const SL = { baru: 'Baru', proses: 'Diproses', siap: 'Siap', selesai: 'Selesai', batal: 'Dibatalkan' };
     const load = async () => {
       const d = await api('/umkm/report?hari=' + h), t = d.tot;
-      head.replaceChildren(seg(h, [[7, '7 hari'], [30, '30 hari'], [90, '90 hari']], (v) => { h = v; load(); }), el('a', { class: 'btn o', href: '/api/panel/umkm/report.csv?hari=' + h, text: '⬇ Unduh CSV' }));
+      head.replaceChildren(seg(h, [[7, '7 hari'], [30, '30 hari'], [90, '90 hari']], (v) => { h = v; load(); }), el('a', { class: 'btn o', href: '/api/panel/umkm/report.csv?hari=' + h, text: 'Unduh CSV' }));
       box.replaceChildren(
         el('div', { class: 'grid' }, SD.StatCard({ label: 'Penjualan bersih', value: rp(t.bersih), note: 'Setelah diskon · tanpa pesanan batal' }), SD.StatCard({ label: 'Jumlah pesanan', value: num(t.pesanan) }),
-          SD.StatCard({ label: 'Unit terjual', value: num(t.unit) }), SD.StatCard({ label: 'Rata-rata per pesanan', value: rp(t.rata) }), SD.StatCard({ label: 'Total diskon diberikan', value: rp(t.potongan), icon: '🏷️' })),
+          SD.StatCard({ label: 'Unit terjual', value: num(t.unit) }), SD.StatCard({ label: 'Rata-rata per pesanan', value: rp(t.rata) }), SD.StatCard({ label: 'Total diskon diberikan', value: rp(t.potongan) })),
         el('div', { class: 'row2' },
           SD.ChartCard(`Penjualan harian (${h} hari)`, SD.BarChart(d.harian.slice(-14).map((x) => ({ label: hari(x.d), value: x.v })), rp)),
           SD.ChartCard('Status pesanan', d.status.length ? hbars(d.status.map((s) => ({ t: SL[s.status] || s.status, v: s.n })), num) : SD.EmptyState({ title: 'Belum ada pesanan' }))),
@@ -142,10 +142,10 @@
     let h = 30; const box = el('div'), head = el('div');
     const load = async () => {
       const d = await api('/admin/report?hari=' + h), t = d.tot;
-      head.replaceChildren(seg(h, [[7, '7 hari'], [30, '30 hari'], [90, '90 hari']], (v) => { h = v; load(); }), el('a', { class: 'btn o', href: '/api/panel/admin/report.csv?hari=' + h, text: '⬇ Unduh CSV' }));
+      head.replaceChildren(seg(h, [[7, '7 hari'], [30, '30 hari'], [90, '90 hari']], (v) => { h = v; load(); }), el('a', { class: 'btn o', href: '/api/panel/admin/report.csv?hari=' + h, text: 'Unduh CSV' }));
       box.replaceChildren(
         el('div', { class: 'grid' }, SD.StatCard({ label: 'Omzet desa', value: rp(t.omzet), note: 'Tanpa pesanan batal' }), SD.StatCard({ label: 'Jumlah pesanan', value: num(t.pesanan) }),
-          SD.StatCard({ label: 'Usaha bertransaksi', value: num(t.usaha), icon: '🏪' }), SD.StatCard({ label: 'Rata-rata per pesanan', value: rp(t.rata) }), SD.StatCard({ label: 'UMKM baru bergabung', value: num(t.baru), icon: '🌱' })),
+          SD.StatCard({ label: 'Usaha bertransaksi', value: num(t.usaha) }), SD.StatCard({ label: 'Rata-rata per pesanan', value: rp(t.rata) }), SD.StatCard({ label: 'UMKM baru bergabung', value: num(t.baru) })),
         el('div', { class: 'row2' },
           SD.ChartCard('Omzet harian', SD.BarChart(d.harian.slice(-14).map((x) => ({ label: hari(x.d), value: x.v })), rp)),
           SD.ChartCard('Omzet per kategori', hbars(d.kategori.map((k) => ({ t: k.kategori, v: k.omzet })), rp))),
@@ -160,7 +160,7 @@
 
   /* ---------- Konten website: pengumuman ---------- */
   A.konten = async () => {
-    const box = el('div'), JN = { info: ['Info', 'info', 'ℹ️'], penting: ['Penting', 'bad', '📣'], acara: ['Acara', 'ok', '🎉'] };
+    const box = el('div'), JN = { info: ['Info', 'info'], penting: ['Penting', 'bad'], acara: ['Acara', 'ok'] };
     const form = (a, reload) => {
       const f = el('form', { novalidate: true }, SD.Field({ id: 'judul', label: 'Judul', value: a ? a.judul : '', maxlength: 90 }),
         SD.Field({ id: 'isi', label: 'Isi pengumuman', type: 'textarea', rows: 4, maxlength: 600 }), SD.Field({ id: 'jenis', label: 'Jenis', type: 'select' }),
@@ -178,15 +178,15 @@
     };
     const load = async () => {
       const { items } = await api('/admin/content');
-      box.replaceChildren(items.length ? el('div', { style: 'display:grid;gap:12px' }, items.map((a) => el('div', { class: 'ann' }, el('div', { class: 'ai', 'aria-hidden': 'true', text: JN[a.jenis][2] }),
+      box.replaceChildren(items.length ? el('div', { style: 'display:grid;gap:12px' }, items.map((a) => el('div', { class: 'ann ' + a.jenis },
         el('div', { style: 'flex:1;min-width:0' }, el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;align-items:center' }, el('b', { text: a.judul }), SD.StatusBadge(JN[a.jenis][0], JN[a.jenis][1]), a.tampil ? SD.StatusBadge('Tampil', 'ok') : SD.StatusBadge('Disembunyikan', 'mut')),
           el('p', { style: 'color:var(--mt);margin-top:6px;white-space:pre-line', text: a.isi }), el('small', { style: 'color:var(--mt)', text: 'Diperbarui ' + tgl(a.updated_at) })),
         el('div', { style: 'display:flex;gap:6px;flex-wrap:wrap' }, el('button', { class: 'btn o', onclick: () => form(a, load), text: 'Ubah' }),
           el('button', { class: 'btn o', onclick: async () => { const c = await confirm({ title: 'Hapus pengumuman?', text: a.judul, ok: 'Hapus', danger: true }); if (!c) return; try { await api('/admin/content/' + a.id, { method: 'DELETE' }); toast('Pengumuman dihapus.'); load(); } catch (e) { toast(e.message, true); } }, text: 'Hapus' }))))) :
-        SD.EmptyState({ title: 'Belum ada pengumuman', text: 'Pengumuman yang diterbitkan tampil sebagai banner di website publik Visit Sendang Duwur.', action: el('button', { class: 'btn', onclick: () => form(null, load), text: '＋ Buat pengumuman' }) }));
+        SD.EmptyState({ title: 'Belum ada pengumuman', text: 'Pengumuman yang diterbitkan tampil sebagai banner di website publik Visit Sendang Duwur.', action: el('button', { class: 'btn', onclick: () => form(null, load), text: 'Buat pengumuman' }) }));
     };
     await load();
-    return el('div', {}, SD.PageHeader({ title: 'Konten Website', desc: 'Kelola pengumuman dan kabar desa yang tampil di website publik.', actions: [el('button', { class: 'btn', onclick: () => form(null, load), text: '＋ Pengumuman baru' })] }), box);
+    return el('div', {}, SD.PageHeader({ title: 'Konten Website', desc: 'Kelola pengumuman dan kabar desa yang tampil di website publik.', actions: [el('button', { class: 'btn', onclick: () => form(null, load), text: 'Pengumuman baru' })] }), box);
   };
 
   /* ---------- Pengaturan admin ---------- */

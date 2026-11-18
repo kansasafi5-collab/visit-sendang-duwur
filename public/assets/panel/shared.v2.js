@@ -39,8 +39,26 @@
     const t = toasts.appendChild(el('div', { class: 'toast' + (bad ? ' bad' : ''), text: msg }));
     setTimeout(() => t.remove(), 4500);
   };
-  const ICONS = [[/produk aktif|total produk|^produk|inventaris|jenis/i, '📦'], [/menunggu|verifikasi|pending/i, '⏳'], [/pesanan/i, '🧾'], [/penjualan|omzet|pendapatan|rupiah/i, '💰'], [/menipis|habis|stok/i, '⚠️'], [/promo|diskon|voucher/i, '🏷️'], [/umkm|usaha|toko/i, '🏪'], [/pengguna|warga|akun/i, '👥'], [/unit|terjual/i, '🛍️'], [/rata/i, '📊']];
-  SD.StatCard = ({ label, value, note, icon }) => el('div', { class: 'card stat' }, el('span', { class: 'ico', 'aria-hidden': 'true', text: icon || (ICONS.find(([re]) => re.test(label)) || [0, '✦'])[1] }), el('div', { class: 'v', text: value }), el('div', { class: 'l', text: label }), note && el('div', { class: 'd', text: note }));
+  SD.StatCard = ({ label, value, note }) => el('div', { class: 'card stat' }, el('div', { class: 'v', text: value }), el('div', { class: 'l', text: label }), note && el('div', { class: 'd', text: note }));
+  /* Ikon garis (statis, bukan data pengguna). Kunci = kunci menu. */
+  const IC = {
+    ringkasan: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+    produk: '<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/>',
+    pesanan: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+    promo: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4Z"/><circle cx="7.5" cy="7.5" r="1" fill="currentColor"/>',
+    inventaris: '<rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4"/>',
+    laporan: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9M13 17V5M8 17v-3"/>',
+    ai: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',
+    profil: '<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9M9 20v-6h6v6M3 9h18"/>',
+    umkm: '<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9M9 20v-6h6v6M3 9h18"/>',
+    verifikasi: '<circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/>',
+    pengguna: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+    konten: '<path d="m3 11 18-5v12L3 14z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+    audit: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    pengaturan: '<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>',
+  };
+  SD.icon = (k) => { const n = el('span', { class: 'ic', 'aria-hidden': 'true' }); n.innerHTML = '<svg viewBox="0 0 24 24">' + (IC[k] || IC.ringkasan) + '</svg>'; return n; };
+
   SD.StatusBadge = (text, tone = 'mut') => el('span', { class: 'sb ' + tone, text });
   SD.EmptyState = ({ title, text, action }) => el('div', { class: 'empty' }, el('h3', { text: title }), text && el('p', { text }), action && el('button', { class: 'btn', onclick: action.onClick, text: action.label }));
   SD.ErrorState = (err, retry) => el('div', { class: 'empty', role: 'alert' }, el('h3', { text: 'Data belum dapat dimuat' }), el('p', { text: err.message }), retry && el('button', { class: 'btn o', onclick: retry, text: 'Coba lagi' }));
@@ -153,10 +171,9 @@
     const hero = () => {
       const h = new Date().getHours(), sapa = h < 11 ? 'Selamat pagi' : h < 15 ? 'Selamat siang' : h < 18 ? 'Selamat sore' : 'Selamat malam';
       const nm = (me.user.name || '').split(' ')[0], tg = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      const act = role === 'umkm' ? [['produk', '＋ Tambah produk', 'g'], ['pesanan', 'Lihat pesanan'], ['promo', 'Buat promo'], ['laporan', 'Laporan penjualan']] : [['verifikasi', 'Verifikasi usaha', 'g'], ['produk', 'Persetujuan produk'], ['laporan', 'Laporan desa'], ['konten', 'Kelola pengumuman']];
-      return el('section', { class: 'hero' }, el('div', { class: 'k', text: tg }), el('h1', { text: sapa + ', ' + nm }),
-        el('p', { text: role === 'umkm' ? 'Kelola produk, pesanan, dan promo ' + (me.business ? me.business.nama : 'usaha Anda') + ' dari satu tempat.' : 'Pantau perkembangan UMKM, verifikasi usaha, dan kelola konten Desa Sendang Duwur.' }),
-        el('div', { class: 'qa' }, act.map(([k, t, c]) => el('a', { class: 'btn ' + (c || ''), href: base + '/' + k, onclick: jump(k), text: t }))));
+      const act = role === 'umkm' ? [['produk', 'Tambah produk', 1], ['pesanan', 'Lihat pesanan'], ['promo', 'Buat promo']] : [['verifikasi', 'Verifikasi usaha', 1], ['produk', 'Persetujuan produk'], ['konten', 'Kelola pengumuman']];
+      return el('div', { class: 'greet' }, el('div', {}, el('div', { class: 'k', text: tg }), el('div', { class: 'sapa', text: sapa + ', ' + nm })),
+        el('div', { class: 'qa' }, act.map(([k, t, main]) => el('a', { class: 'btn' + (main ? '' : ' o'), href: base + '/' + k, onclick: jump(k), text: t }))));
     };
 
     async function go(k) {
@@ -171,7 +188,7 @@
       } catch (e) { content.replaceChildren(SD.ErrorState(e, () => go(m[0]))); }
       content.focus({ preventScroll: true });
     }
-    menu.forEach(([k, label, ic]) => nav.append(el('a', { href: base + (k === 'ringkasan' ? '' : '/' + k), 'data-k': k, onclick: (e) => { e.preventDefault(); history.pushState(null, '', e.currentTarget.getAttribute('href')); go(k); } }, el('span', { class: 'ic', 'aria-hidden': 'true', text: ic }), el('span', { class: 'lb', text: label }))));
+    menu.forEach(([k, label, ic]) => nav.append(el('a', { href: base + (k === 'ringkasan' ? '' : '/' + k), 'data-k': k, onclick: (e) => { e.preventDefault(); history.pushState(null, '', e.currentTarget.getAttribute('href')); go(k); } }, SD.icon(k), el('span', { class: 'lb', text: label }))));
     addEventListener('popstate', () => go(keyOf()));
     go(keyOf());
   };
