@@ -51,20 +51,10 @@ app.use('/api', (_req, res, next) => { res.set('Cache-Control', 'no-store'); nex
 require('./panel').mount(app, { db, auth, PUBLIC });
 app.use('/api', router);
 
-// Halaman admin hanya dikirim ke admin yang sudah masuk.
-app.get('/admin', auth.load, (req, res) => {
-  if (!req.user) return res.redirect('/login?next=' + encodeURIComponent('/admin'));
-  if (req.user.role !== 'admin') return res.status(403).type('html').send('<!doctype html><meta charset="utf-8"><title>Akses ditolak</title><body style="font:16px system-ui;padding:40px"><h1>Akses ditolak</h1><p>Akun ini bukan admin desa.</p><p><a href="/">Kembali ke beranda</a></p></body>');
-  res.set('Cache-Control', 'no-store').sendFile(path.join(PUBLIC, 'admin.html'));
-});
-// Dashboard UMKM hanya dikirim ke akun UMKM (role dibaca dari database, bukan dari klien).
-app.get('/umkm', auth.load, (req, res) => {
-  if (!req.user) return res.redirect('/login?next=' + encodeURIComponent('/umkm'));
-  if (req.user.role !== 'umkm') return res.status(403).type('html').send('<!doctype html><meta charset="utf-8"><title>Akses ditolak</title><body style="font:16px system-ui;padding:40px"><h1>Akses ditolak</h1><p>Halaman ini khusus akun pelaku UMKM.</p><p><a href="/">Kembali ke beranda</a></p></body>');
-  res.set('Cache-Control', 'no-store').sendFile(path.join(PUBLIC, 'umkm.html'));
-});
-app.get('/umkm.html', (_req, res) => res.redirect('/umkm'));
-app.get('/admin.html', (_req, res) => res.redirect('/admin'));
+// Alamat lama /admin dan /umkm diteruskan ke dashboard baru (/panel/admin, /panel/umkm).
+// Hak akses tetap diperiksa di server pada /panel/* dan /api/panel/* (role dibaca dari database, bukan dari klien).
+app.get(['/admin', '/admin.html'], (_req, res) => res.redirect(301, '/panel/admin'));
+app.get(['/umkm', '/umkm.html'], (_req, res) => res.redirect(301, '/panel/umkm'));
 // Tiga halaman masuk: pengunjung/warga, pelaku UMKM, admin desa (satu berkas, jenis akun dibaca dari alamat).
 for (const p of ['/login', '/login/umkm', '/login/admin'])
   app.get(p, (_req, res) => res.set('Cache-Control', 'no-cache').sendFile(path.join(PUBLIC, 'login.html')));

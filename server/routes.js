@@ -185,7 +185,7 @@ router.get('/auth/google/callback', ah(async (req, res) => {
     }
     auth.startSession(res, u.id, true);
     const dest = safeNext(saved.n);
-    res.redirect(dest !== '/' ? dest : u.role === 'admin' ? '/admin' : u.role === 'umkm' ? '/umkm' : '/');
+    res.redirect(dest !== '/' ? dest : u.role === 'admin' ? '/panel/admin' : u.role === 'umkm' ? '/panel/umkm' : '/');
   } catch (e) {
     console.error('Google OAuth gagal:', e.message);
     fail('google_failed');
