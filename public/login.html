@@ -550,7 +550,7 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
         $('#welcome').hidden = false;
         $('#wgo').textContent = t('wgo');
         const hasNext = new URLSearchParams(location.search).has('next');
-        setTimeout(() => location.replace(hasNext ? nextUrl() : u.role === 'admin' ? '/admin' : u.role === 'umkm' ? '/umkm' : '/'), 900);
+        setTimeout(() => location.replace(hasNext ? nextUrl() : u.role === 'admin' ? '/panel/admin' : u.role === 'umkm' ? '/panel/umkm' : '/'), 900);
         return;
       }
       if (r.data.fields) {
@@ -693,7 +693,7 @@ label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 7px; }
   // Bila sudah masuk, langsung arahkan ke tujuan.
   fetch('/api/auth/me', { credentials: 'same-origin' })
     .then((r) => r.json())
-    .then((d) => { if (d && d.user && !resetToken) location.replace(new URLSearchParams(location.search).has('next') ? nextUrl() : d.user.role === 'admin' ? '/admin' : d.user.role === 'umkm' ? '/umkm' : '/'); })
+    .then((d) => { if (d && d.user && !resetToken) location.replace(new URLSearchParams(location.search).has('next') ? nextUrl() : d.user.role === 'admin' ? '/panel/admin' : d.user.role === 'umkm' ? '/panel/umkm' : '/'); })
     .catch(() => {});
 })();
 </script>
