@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Toko · Visit Sendang Duwur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/panel/shared.v2.css">
+<style>.wrap{max-width:960px;margin:0 auto;padding:28px clamp(16px,3vw,32px) 80px}.pl{display:grid;gap:12px}.pr{display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap}.pr .nm{font-weight:700}.old{text-decoration:line-through;color:var(--mt);font-size:13px}.tag{display:inline-block;background:var(--gd);color:#151515;font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px}.qty{width:84px;padding:8px;border:1px solid var(--ln);border-radius:var(--r);background:var(--sf)}.sum{margin-top:22px}.sum li{margin:4px 0}.tot{font:600 26px Fraunces,Georgia,serif}</style>
+</head>
+<body>
+<main class="wrap" id="app"><div class="sk" style="height:120px"></div></main>
+<script src="/assets/panel/shared.v2.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const { el, rp, toast } = SD, app = document.getElementById('app'), id = location.pathname.split('/')[2];
+  const J = async (url, body) => { const r = await fetch(url, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : undefined); const j = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(j.error || 'Terjadi kesalahan.'), { fields: j.fields }); return j; };
+  let d; try { d = await J('/api/toko/' + encodeURIComponent(id)); } catch (e) { return app.replaceChildren(SD.ErrorState(e)); }
+  const qty = new Map(), sum = el('div', { class: 'sum' }), form = el('div');
+  const promoTag = (p) => (p.promo.length ? el('div', {}, p.promo.map((x) => el('span', { class: 'tag', title: 'Berlaku s/d ' + x.selesai, text: (x.tipe === 'persen' ? 'PROMO ' + x.nilai + '%' : 'POTONGAN ' + rp(x.nilai)) + (x.min_belanja ? ' · min. ' + rp(x.min_belanja) : '') }))) : null);
+  // Foto produk dari UMKM; bila belum ada, gambar contoh per kategori dengan label "Ilustrasi" (bukan foto asli usaha).
+  const CONTOH = { 'Batik': '/assets/panel/ilus/contoh-batik-tulis.jpg', 'Bordir & sablon': '/assets/panel/ilus/contoh-bordir.jpg' };
+  const thumb = (p) => { const own = (p.fotos || [])[0], src = own ? '/uploads/' + own : CONTOH[d.toko.kategori]; if (!src) return null;
+    return el('div', { style: 'position:relative;flex:none' }, el('img', { src, alt: own ? 'Foto ' + p.nama : 'Gambar contoh ' + d.toko.kategori, width: 96, height: 96, loading: 'lazy', style: 'object-fit:cover;border-radius:6px;display:block' }),
+      own ? null : el('span', { class: 'tag', style: 'position:absolute;left:4px;bottom:4px;font-size:10px', text: 'Ilustrasi' })); };
+  const items = () => [...qty].filter(([, q]) => q > 0).map(([productId, q]) => ({ productId, qty: q }));
+  let seq = 0;
+  async function refresh() {
+    const it = items(), my = ++seq; sum.replaceChildren();
+    if (!it.length) return sum.append(el('p', { style: 'color:var(--mt)', text: 'Pilih produk untuk melihat total.' }));
+    try {
+      const q = await J('/api/checkout/preview', { businessId: d.toko.id, items: it, voucher: v.value }); if (my !== seq) return;
+      sum.append(el('ul', { style: 'padding-left:18px' }, q.lines.map((l) => el('li', { text: `${l.qty}× ${l.nama} — ${rp(l.harga * l.qty)}${l.potongan ? ' (diskon ' + rp(l.potongan) + ')' : ''}` }))),
+        q.potongan ? el('p', { text: `${q.promo.nama}${q.promo.kode ? ' (' + q.promo.kode + ')' : ''}: hemat ${rp(q.potongan)}` }) : null, el('div', { class: 'tot', text: 'Total ' + rp(q.total) }));
+    } catch (e) { if (my === seq) sum.append(el('p', { style: 'color:var(--bad)', role: 'alert', text: e.message })); }
+  }
+  const v = el('input', { class: 'qty', style: 'width:180px', placeholder: 'Kode voucher', maxlength: 20, 'aria-label': 'Kode voucher', oninput: refresh });
+  const nama = el('input', { class: 'qty', style: 'width:100%', maxlength: 60, 'aria-label': 'Nama Anda', placeholder: 'Nama Anda' });
+  const kontak = el('input', { class: 'qty', style: 'width:100%', maxlength: 20, 'aria-label': 'Nomor WhatsApp', placeholder: 'Nomor WhatsApp Anda (opsional)' });
+  const btn = el('button', { class: 'btn', text: 'Kirim pesanan', onclick: async () => {
+    btn.disabled = true;
+    try {
+      const o = await J('/api/checkout', { businessId: d.toko.id, items: items(), voucher: v.value, pemesan: nama.value, kontak: kontak.value });
+      const txt = encodeURIComponent(`Halo ${d.toko.nama}, saya ${nama.value.trim()} memesan (pesanan #${o.id}):\n` + o.lines.map((l) => `- ${l.qty}× ${l.nama}`).join('\n') + `\nTotal ${rp(o.total)}. Mohon info cara pembayarannya.`);
+      app.replaceChildren(el('div', { class: 'card' }, el('h2', { text: 'Pesanan #' + o.id + ' tercatat' }),
+        el('p', { style: 'margin:10px 0', text: `Total ${rp(o.total)}. Pembayaran belum dilakukan di situs ini: hubungi penjual lewat WhatsApp untuk konfirmasi dan cara membayar.` }),
+        o.wa ? el('a', { class: 'btn', href: 'https://wa.me/' + o.wa + '?text=' + txt, target: '_blank', rel: 'noopener', text: 'Lanjut ke WhatsApp penjual' }) : el('p', { text: 'Penjual belum mencantumkan WhatsApp; mereka akan melihat pesanan Anda di panel.' }), ' ', el('a', { class: 'btn o', href: '/', text: 'Kembali ke beranda' })));
+    } catch (e) { toast(e.message, true); btn.disabled = false; }
+  } });
+  // Asisten AI: menjawab dari data toko (harga/stok/promo terbaru). Tanpa kunci AI di server → pesan "belum tersedia" + WhatsApp.
+  function chat() {
+    const log = el('div', { 'aria-live': 'polite', style: 'display:flex;flex-direction:column;gap:8px;margin:10px 0' }), hist = [];
+    const q = el('input', { class: 'qty', style: 'flex:1;min-width:0;width:auto', maxlength: 300, placeholder: 'Mis. apakah ada diskon?', 'aria-label': 'Pertanyaan untuk asisten toko' });
+    const say = (who, text, extra) => log.append(el('div', { style: 'padding:8px 12px;border-radius:8px;max-width:88%;' + (who === 'user' ? 'align-self:flex-end;background:var(--gd);color:#151515' : 'align-self:flex-start;background:var(--bg);border:1px solid var(--ln)') }, text, extra || null));
+    const send = el('button', { class: 'btn', text: 'Tanya' });
+    const ask = async () => {
+      const text = q.value.trim(); if (text.length < 2) return; q.value = ''; say('user', text); send.disabled = true;
+      try {
+        const r = await fetch('/api/toko/' + encodeURIComponent(d.toko.id) + '/tanya', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pertanyaan: text, riwayat: hist.slice(-4) }) });
+        const j = await r.json().catch(() => ({}));
+        const wa = j.wa ? el('div', {}, el('a', { href: 'https://wa.me/' + j.wa, target: '_blank', rel: 'noopener', text: 'Hubungi pemilik via WhatsApp' })) : null;
+        if (!r.ok) say('bot', j.error || 'Terjadi kesalahan.', wa); else { hist.push({ role: 'user', text }, { role: 'assistant', text: j.jawaban }); say('bot', j.jawaban, wa); }
+      } catch { say('bot', 'Tidak dapat terhubung. Coba lagi.'); } finally { send.disabled = false; q.focus(); }
+    };
+    send.onclick = ask; q.onkeydown = (e) => e.key === 'Enter' && ask();
+    return el('div', { class: 'card', style: 'margin-top:20px' }, el('h3', { text: 'Tanya asisten toko' }), el('p', { style: 'color:var(--mt);font-size:13px', text: 'Dijawab AI berdasarkan data toko. Harga dan stok bisa berubah; asisten tidak menerima pesanan atau pembayaran.' }), log, el('div', { style: 'display:flex;gap:8px' }, q, send));
+  }
+  app.replaceChildren(el('a', { href: '/', text: '← Beranda' }), el('h1', { style: 'margin:10px 0 4px', text: d.toko.nama }), el('p', { style: 'color:var(--mt);margin-bottom:20px', text: [d.toko.kategori, d.toko.alamat].filter(Boolean).join(' · ') }),
+    d.produk.length ? el('div', { class: 'pl' }, d.produk.map((p) => { const i = el('input', { class: 'qty', type: 'number', min: 0, max: Math.min(p.stok, 999), value: 0, 'aria-label': 'Jumlah ' + p.nama, oninput: () => { qty.set(p.id, Math.max(0, Math.min(+i.value || 0, p.stok))); refresh(); } });
+      return el('div', { class: 'card pr' }, thumb(p), el('div', { style: 'flex:1;min-width:160px' }, el('div', { class: 'nm', text: p.nama }), p.deskripsi ? el('div', { style: 'color:var(--mt);font-size:14px', text: p.deskripsi }) : null, promoTag(p), el('div', { text: rp(p.harga) + (p.stok > 0 && p.stok <= 5 ? ' · sisa ' + p.stok : '') })), p.stok > 0 ? i : SD.StatusBadge('Stok habis', 'bad')); }))
+      : SD.EmptyState({ title: 'Belum ada produk', text: 'Toko ini belum memiliki produk yang disetujui.' }),
+    d.produk.length ? el('div', { class: 'card', style: 'margin-top:20px' }, el('h3', { text: 'Pesan' }), el('div', { class: 'fld' }, el('label', { text: 'Kode voucher (jika ada)' }), v), sum, el('div', { class: 'fld', style: 'margin-top:14px' }, nama), el('div', { class: 'fld' }, kontak), btn) : null, chat());
+  refresh();
+})();
+</script>
+</body>
+</html>

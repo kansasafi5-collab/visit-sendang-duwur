@@ -581,7 +581,7 @@ FX.forEach((f,i)=>{const b=el('button','',f.n);b.type='button';b.onclick=()=>{fi
 const PDS={'Batik':'Kain dan busana batik tulis Sendang','Bordir & sablon':'Bordir, busana, dan sablon','Kuliner & toko':'Kuliner, jamu, dan kebutuhan harian','Direktori SIILa':'Batik tulis (tercatat di SIILa)'};
 const PRC=c=>c==='Batik'||c==='Direktori SIILa'?'Kisaran Rp150.000–1.700.000+ (batik tulis, bukan harga resmi)':'Harga: tanyakan ke penjual';
 const phoneOf=u=>u.wa||null;
-let uc='Semua',uq='',ucon=false,usort='az';let ordU=null;
+let uc='Semua',uq='',ucon=false,usort='az';let ordU=null;const TK=new Map();
 const UCAT={'Batik':{k:'batik',t:'Batik tulis',s:'Kain & busana tulis tangan'},'Bordir & sablon':{k:'bordir',t:'Bordir & sablon',s:'Busana, bordir, sablon'},'Kuliner & toko':{k:'kuliner',t:'Kuliner & toko',s:'Jamu, jajan, kebutuhan harian'}};
 const UW=n=>{const w=n.replace(/^(Batik Tulis|Batik|Toko|Warung|Obat Jamu|Obat)\s+/i,'').split(/\s+/).filter(Boolean);return((w[0]||n).charAt(0)+(w[1]?w[1].charAt(0):'')).toUpperCase()};
 const CHAT_SVG='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9.5L4 21.5V17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>';
@@ -598,7 +598,7 @@ function umr(){const r=$('#um');r.textContent='';const q=uq.toLowerCase();let L=
   const m=el('div','bz-meta');m.appendChild(el('span','bz-chip'+(ph?' ok':''),ph?'WhatsApp tersedia':'Via kantor desa'));bd.appendChild(m);
   if(u.alamat){const ad=el('p','bz-addr');ad.innerHTML=IC.pin;ad.appendChild(document.createTextNode(u.alamat));bd.appendChild(ad)}if(u.whatsapp){const tl=el('p','bz-addr');tl.innerHTML=IC.tel;tl.appendChild(document.createTextNode(u.whatsapp));bd.appendChild(tl)}
   bd.appendChild(el('p','bz-stock',ph?'Stok: konfirmasi ke penjual':'Stok & kontak via kantor desa'));
-  const ac=el('div','bz-act');const bt=el('button','xbtn a','Pesan langsung');bt.type='button';bt.onclick=()=>{ordU=u;$('#ot').textContent=u.n+(ph?'':' · pesanan diteruskan lewat WhatsApp kantor desa karena kontak penjual belum terdata');$('#od').showModal()};ac.appendChild(bt);
+  const ac=el('div','bz-act');const bt=el('button','xbtn a','Pesan langsung');bt.type='button';bt.onclick=()=>{ordU=u;$('#ot').textContent=u.n+(ph?'':' · pesanan diteruskan lewat WhatsApp kantor desa karena kontak penjual belum terdata');$('#od').showModal()};ac.appendChild(bt);{const tk=TK.get(u.id);if(tk){const a=el('a','xbtn a','Lihat produk'+(tk.promo?' & promo':''));a.href='/toko/'+u.id;ac.insertBefore(a,bt)}}
   if(ph){const a=el('a','xbtn o');a.innerHTML=CHAT_SVG+'Chat penjual';a.href=waURL(ph,'Halo '+u.n+', saya melihat usaha Anda di situs Visit Sendang Duwur.');a.target='_blank';a.rel='noopener';ac.appendChild(a)}
   bd.appendChild(ac);d.appendChild(bd);r.appendChild(d)});
  cnt.innerHTML='<b>'+L.length+'</b> usaha ditampilkan · <b>'+L.filter(phoneOf).length+'</b> bisa dihubungi langsung lewat WhatsApp';
@@ -610,7 +610,7 @@ $('#uq').oninput=e=>{uq=e.target.value;umr()};
 $('#uso').onchange=e=>{usort=e.target.value;umr()};$('#ucn').onchange=e=>{ucon=e.target.checked;umr()};
 $('#oc').onclick=()=>$('#od').close();$('#of').onsubmit=async e=>{e.preventDefault();const u=ordU,w=window.open('','_blank');let r;try{r=await api('/api/orders',{method:'POST',body:{businessId:u.id,pemesan:$('#on').value,pesanan:$('#op').value,jumlah:Number($('#oq').value),kontak:$('#ok').value}})}catch(er){if(w)w.close();alert('Pesanan belum terkirim: '+er.message);return}
  const ph=r.wa||WA,own=!!r.wa;const t='Halo'+(own?' '+u.n:' Kantor Desa Sendang Duwur')+', saya '+$('#on').value+' ingin memesan (No. pesanan #'+r.id+'):\n'+$('#op').value+'\nJumlah: '+$('#oq').value+(own?'':'\nUntuk usaha: '+u.n+' (mohon diteruskan)')+'\nMohon info harga dan ketersediaan. Terima kasih.';if(w)w.location.href=waURL(ph,t);else location.href=waURL(ph,t);$('#of').reset();$('#oq').value=1;$('#od').close()};
-async function loadU(){let err=false;try{const r=await api('/api/businesses');U=r.items.map(b=>({id:b.id,n:b.nama,o:b.pemilik,c:b.kategori,alamat:b.alamat,whatsapp:b.whatsapp,wa:b.wa}))}catch(e){U=[];err=true}buildTiles();umr();if(err){$('#um').textContent='';$('#um').appendChild(el('div','bz-empty','Daftar usaha belum bisa dimuat. Muat ulang halaman beberapa saat lagi.'));cnt.textContent=''}}
+async function loadU(){let err=false;try{const r=await api('/api/businesses');U=r.items.map(b=>({id:b.id,n:b.nama,o:b.pemilik,c:b.kategori,alamat:b.alamat,whatsapp:b.whatsapp,wa:b.wa}))}catch(e){U=[];err=true}try{const t=await api('/api/toko');t.items.forEach(x=>TK.set(x.id,x))}catch(e){}buildTiles();umr();if(err){$('#um').textContent='';$('#um').appendChild(el('div','bz-empty','Daftar usaha belum bisa dimuat. Muat ulang halaman beberapa saat lagi.'));cnt.textContent=''}}
 loadU();
 
 /* --- perencana --- */

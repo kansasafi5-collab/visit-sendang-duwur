@@ -47,6 +47,8 @@ app.use('/api', (req, res, next) => {
   next();
 });
 app.use('/api', (_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+// Dashboard baru (UMKM + Admin Desa). Harus sebelum router lama karena router lama menutup /api dengan 404.
+require('./panel').mount(app, { db, auth, PUBLIC });
 app.use('/api', router);
 
 // Halaman admin hanya dikirim ke admin yang sudah masuk.

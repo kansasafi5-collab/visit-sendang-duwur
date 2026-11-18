@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Panel · Visit Sendang Duwur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/panel/shared.v2.css">
+</head>
+<body>
+<div id="app" aria-live="polite"></div>
+<noscript>Panel memerlukan JavaScript.</noscript>
+<script src="/assets/panel/shared.v2.js"></script>
+<script>
+(function () {
+  var role = location.pathname.split('/')[2], app = document.getElementById('app');
+  var go = function () { SD.boot(app, role); };
+  if (role !== 'umkm' && role !== 'admin') return go();
+  var s = document.createElement('script'); s.src = '/assets/panel/' + role + '.v2.js'; s.onload = go; s.onerror = go; document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
